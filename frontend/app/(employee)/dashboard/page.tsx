@@ -40,18 +40,13 @@ export default function EmployeeDashboard() {
   const [notifications, setNotifications] = useState<INotification[]>([]);
   const [workTotals, setWorkTotals] = useState<IWorkdayTotals | null>(null);
   const [activeTab, setActiveTab] = useState<(typeof TAB_DEFINITIONS)[number]['id']>('work');
-  const [showPermissionModal, setShowPermissionModal] = useState(false);
+  const [showPermissionModal, setShowPermissionModal] = useState(
+    () => !getCachedPermissionStatus()
+  );
 
   useEffect(() => {
     if (!user) return;
     fetch(user._id);
-    
-    // Check if permissions have been requested
-    const cached = getCachedPermissionStatus();
-    // Show modal if no permissions have been cached yet
-    if (!cached) {
-      setShowPermissionModal(true);
-    }
   }, [user, fetch]);
 
   useEffect(() => {

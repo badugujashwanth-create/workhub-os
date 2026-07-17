@@ -58,12 +58,16 @@ export const getBrowserInfo = () => {
 export const canUseWebRTC = () => {
   if (typeof window === 'undefined') return false;
 
+  const legacyWindow = window as typeof window & {
+    webkitRTCPeerConnection?: typeof RTCPeerConnection;
+    mozRTCPeerConnection?: typeof RTCPeerConnection;
+  };
+
   return (
-    !!(
-      navigator.mediaDevices &&
-      navigator.mediaDevices.getUserMedia &&
-      window.RTCPeerConnection
-    ) || !!(window.webkitRTCPeerConnection || window.mozRTCPeerConnection)
+    (typeof navigator.mediaDevices?.getUserMedia === 'function' &&
+      typeof window.RTCPeerConnection !== 'undefined') ||
+    typeof legacyWindow.webkitRTCPeerConnection !== 'undefined' ||
+    typeof legacyWindow.mozRTCPeerConnection !== 'undefined'
   );
 };
 
