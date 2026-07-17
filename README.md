@@ -1,9 +1,15 @@
 # WorkHub - IT Workshop Management System
 
+> **Status: Active Development** — The frontend now passes lint and a Next.js production build; the MongoDB-backed API still needs an automated test suite.
+
+[![Watch the WorkHub OS demo](docs/demo/demo-thumbnail.png)](docs/demo/demo.webm)
+
+> Watch the locally recorded role-based entry point and architecture overview; no real employee account or data is used.
+
 The WorkHub stack now ships a full IT-Workshop / Employee Management cockpit with multi-role access, advanced attendance tracking, and productivity analytics. The project contains two apps:
 
 - **Backend** - Express + MongoDB API (`/backend`)
-- **Frontend** - Next.js 14 dashboard (`/frontend`)
+- **Frontend** - Next.js 16 dashboard (`/frontend`)
 
 ## Getting Started
 
