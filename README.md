@@ -6,7 +6,9 @@
 
 > Watch the locally recorded role-based entry point and architecture overview; no real employee account or data is used.
 
-The WorkHub stack now ships a full IT-Workshop / Employee Management cockpit with multi-role access, advanced attendance tracking, and productivity analytics. The project contains two apps:
+[Architecture](docs/ARCHITECTURE.md) · [Test evidence](docs/TEST_REPORT.md) · [Interview guide](docs/INTERVIEW_GUIDE.md)
+
+WorkHub is a role-based workplace operations prototype covering tasks, attendance, permissions, collaboration, calls, reporting, and administration. The project contains two apps:
 
 - **Backend** - Express + MongoDB API (`/backend`)
 - **Frontend** - Next.js 16 dashboard (`/frontend`)

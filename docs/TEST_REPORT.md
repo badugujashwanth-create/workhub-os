@@ -1,29 +1,17 @@
-# Test Report - WorkHub
+# Test report — WorkHub
 
-Date: 2026-01-11
-
-## Scope
-- Frontend call/chat quick-start updates
-- Chat roster selection improvements
-
-## Tests Run
-- frontend: `npm run lint` (pass)
-
-## Manual Checks
-- Not run (UI not launched in this session)
-
-## Notes
-- No automated backend tests are defined in this repository.
-- WebRTC call flows still require a running socket server and TURN/STUN config for full validation.
-# Portfolio verification update — 2026-07-17
+Audited on 2026-07-18 from the `portfolio-polish` branch on Windows.
 
 | Command | Result | Evidence / notes |
 |---|---|---|
-| `npm ci` in `backend` | Pass | 303 packages installed; Multer 1.x deprecation/security warning remains |
-| `npm ci` in `frontend` | Pass | 442 packages installed |
-| `npm run lint` in `frontend` | Pass | No lint errors after permission-response typing and effect initialization fixes |
-| `npm run build` in `frontend` | Pass | Next.js production build completed |
-| Backend automated tests | Not run | No test script is configured |
-| Backend startup | Not run | Requires a configured MongoDB instance and environment values |
+| `backend: npm ci` | Pass | Backend dependencies installed; Multer 1.x deprecation/security warning remains a dependency-upgrade item |
+| `backend: npm test` | Pass | 5 Node tests verify CORS defaults, normalization/deduplication, scoped Netlify previews, suffix-spoof rejection, and local/server requests |
+| `frontend: npm ci` | Pass | Frontend dependencies installed |
+| `frontend: npm run lint` | Pass | No lint errors |
+| `frontend: npm run build` | Pass | Next.js production build completed; 37 routes generated |
+| Backend startup | Not run | Requires configured MongoDB and environment values |
+| WebRTC/socket workflow | Not run | Requires a running socket server and TURN/STUN configuration |
 
-This update supersedes older status claims where they conflict. It does not verify external services or deployment health.
+## Overall status
+
+The frontend and the newly tested CORS security boundary are verified. Authenticated workspace/project/task authorization, database integration, real-time calls, and external services are not inferred to work from these checks. WorkHub remains a secondary case study rather than a featured project until a database-backed primary workflow is integration-tested.
