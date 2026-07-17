@@ -1,12 +1,17 @@
-import { apiClient } from './apiClient';
+import apiClient from './apiClient';
 
-interface WorkPermission {
+export interface WorkPermission {
   _id: string;
   employee: {
     _id: string;
     name: string;
     email: string;
     role: string;
+  };
+  requestedBy: {
+    _id: string;
+    name: string;
+    email: string;
   };
   task: {
     _id: string;
@@ -16,7 +21,7 @@ interface WorkPermission {
   status: 'pending' | 'accepted' | 'rejected' | 'expired';
   workType: string;
   estimatedHours: number;
-  priority: string;
+  priority: 'low' | 'medium' | 'high' | 'critical';
   dueDate?: string;
   requestMessage?: string;
   createdAt: string;

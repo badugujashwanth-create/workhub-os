@@ -11,30 +11,13 @@ import {
   User,
   MessageSquare
 } from 'lucide-react';
-import { workPermissionService } from '@/services/workPermissionService';
-
-interface WorkPermissionRequest {
-  _id: string;
-  task: {
-    _id: string;
-    title: string;
-    description: string;
-  };
-  requestedBy: {
-    name: string;
-    email: string;
-  };
-  workType: string;
-  estimatedHours: number;
-  priority: 'low' | 'medium' | 'high' | 'critical';
-  dueDate?: string;
-  requestMessage?: string;
-  createdAt: string;
-  expiresAt: string;
-}
+import {
+  workPermissionService,
+  type WorkPermission
+} from '@/services/workPermissionService';
 
 export const WorkPermissionPanel: React.FC = () => {
-  const [permissions, setPermissions] = useState<WorkPermissionRequest[]>([]);
+  const [permissions, setPermissions] = useState<WorkPermission[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [respondingTo, setRespondingTo] = useState<string | null>(null);
@@ -118,7 +101,7 @@ export const WorkPermissionPanel: React.FC = () => {
       <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-8 text-center">
         <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-3" />
         <h3 className="text-lg font-semibold text-gray-700 mb-2">No Pending Permissions</h3>
-        <p className="text-gray-600">You're all caught up! No work permissions awaiting your response.</p>
+        <p className="text-gray-600">You&apos;re all caught up! No work permissions awaiting your response.</p>
       </div>
     );
   }

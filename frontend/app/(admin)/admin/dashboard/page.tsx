@@ -38,7 +38,9 @@ export default function AdminDashboard() {
   const [dailyReport, setDailyReport] = useState<IDailyActivityReport | null>(null);
   const [settings, setSettings] = useState<ISystemSettings | null>(null);
   const [accessDenied, setAccessDenied] = useState(false);
-  const [showPermissionModal, setShowPermissionModal] = useState(false);
+  const [showPermissionModal, setShowPermissionModal] = useState(
+    () => !getCachedPermissionStatus()
+  );
 
   usePresenceSync();
 
@@ -46,13 +48,6 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (canViewAnalytics) setAccessDenied(false);
-    
-    // Check if permissions have been requested
-    const cached = getCachedPermissionStatus();
-    // Show modal if no permissions have been cached yet
-    if (!cached) {
-      setShowPermissionModal(true);
-    }
   }, [canViewAnalytics, user?._id]);
 
   const loadStatuses = useCallback(async () => {
