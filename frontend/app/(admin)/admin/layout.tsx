@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
 import { useSocket } from '@/hooks/useSocket';
-import { usePresenceHeartbeat } from '@/hooks/usePresenceHeartbeat';
 import { useAuthStore } from '@/store/useAuthStore';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -14,8 +13,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const socketUserId = ready && user ? user._id : undefined;
 
   useSocket(socketUserId);
-  usePresenceHeartbeat();
-
   useEffect(() => {
     hydrate();
   }, [hydrate]);

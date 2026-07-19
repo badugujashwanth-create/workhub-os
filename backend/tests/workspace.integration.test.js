@@ -9,6 +9,7 @@ import authRoutes from '../routes/authRoutes.js';
 import projectRoutes from '../routes/projectRoutes.js';
 import taskRoutes from '../routes/taskRoutes.js';
 import adminRoutes from '../routes/adminRoutes.js';
+import workRoutes from '../routes/workRoutes.js';
 import Role from '../models/Role.js';
 import User from '../models/User.js';
 import Project from '../models/Project.js';
@@ -56,6 +57,7 @@ before(async () => {
   app.use('/api/projects', projectRoutes);
   app.use('/api/tasks', taskRoutes);
   app.use('/api/admin', adminRoutes);
+  app.use('/api/work', workRoutes);
   app.use((error, req, res, next) => {
     res.status(error.status || 500).json({ message: error.message || 'Server error' });
   });
@@ -92,6 +94,19 @@ test('authenticated project and task workflow enforces object-level access', asy
   const managerBToken = await login('manager-b@workhub.test');
   const employeeAToken = await login('employee-a@workhub.test');
   const employeeBToken = await login('employee-b@workhub.test');
+
+  const beforeExplicitStart = await request('/api/work/current', {
+    token: employeeAToken
+  });
+  assert.equal(beforeExplicitStart.status, 200);
+  assert.equal(beforeExplicitStart.body, null);
+
+  const explicitStart = await request('/api/work/start', {
+    token: employeeAToken,
+    method: 'POST'
+  });
+  assert.equal(explicitStart.status, 201);
+  assert.equal(explicitStart.body.status, 'active');
 
   const projectResponse = await request('/api/projects', {
     token: managerAToken,

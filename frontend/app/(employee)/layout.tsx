@@ -6,7 +6,6 @@ import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
 import { useSocket } from '@/hooks/useSocket';
 import { usePresenceHeartbeat } from '@/hooks/usePresenceHeartbeat';
-import { useWorkTimer } from '@/hooks/useWorkTimer';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useWorkStore } from '@/store/useWorkStore';
 
@@ -15,12 +14,11 @@ const EMPLOYEE_ROLES = new Set(['employee', 'manager', 'hr', 'auditor']);
 export default function EmployeeLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { user, ready, hydrate } = useAuthStore();
-  const { refresh } = useWorkStore();
+  const { refresh, session } = useWorkStore();
   const socketUserId = ready && user ? user._id : undefined;
 
   useSocket(socketUserId);
-  usePresenceHeartbeat();
-  useWorkTimer();
+  usePresenceHeartbeat(Boolean(session));
 
   useEffect(() => {
     hydrate();

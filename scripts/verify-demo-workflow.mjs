@@ -56,6 +56,9 @@ const updated = await request(`/tasks/${task._id}`, {
 });
 if (updated.status !== 'in_progress') throw new Error('Task status did not persist.');
 
+const beforeStart = await request('/work/current', { token: employee.token });
+if (beforeStart !== null) throw new Error('A work session started before explicit employee action.');
+await request('/work/start', { token: employee.token, method: 'POST' });
 const currentSession = await request('/work/current', { token: employee.token });
 if (!currentSession) throw new Error('Employee login did not establish a work session.');
 

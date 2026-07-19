@@ -18,7 +18,7 @@ WorkHub explores how small teams can connect role-aware project assignment, empl
 - Project ownership, manager/member visibility, and task assignment.
 - Employee status updates with restricted mutable fields.
 - Cross-project and foreign-manager denial.
-- Work-session creation during login and manager-side task verification.
+- Explicit employee work-session start and manager-side task verification.
 
 ## Supporting surfaces
 

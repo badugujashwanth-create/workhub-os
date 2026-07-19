@@ -17,6 +17,7 @@ Audited on 2026-07-20 from `product-completion-v1.1` on Windows.
 - Unrelated employees cannot read foreign projects or tasks.
 - A manager cannot read, rename, or move work belonging to another manager’s project.
 - Employee task updates allow status changes without accepting title, assignee, or project mass assignment.
+- Login does not begin a work session; the explicit start action creates it.
 - Manager task lists are restricted to projects they manage or tasks they assigned.
 - CORS rejects suffix spoofing and previews belonging to another Netlify site.
 

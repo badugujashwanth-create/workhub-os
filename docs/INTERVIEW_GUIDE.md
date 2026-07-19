@@ -10,7 +10,7 @@ A manager works inside an owned or managed project, assigns a project member, an
 
 ## What was the hardest problem?
 
-The broad API originally relied heavily on role checks. The stronger boundary combines roles with project ownership, manager/member relationships, task assignment, allowlisted employee updates, and regression tests against a real ephemeral database.
+The broad API originally relied heavily on role checks and automatic activity startup. The stronger boundary combines project relationships, task allowlists, explicit session start, and regression tests against a real ephemeral database.
 
 ## What evidence exists?
 

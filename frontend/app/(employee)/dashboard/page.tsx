@@ -4,14 +4,12 @@ import { useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import StatusBadge from '@/components/StatusBadge';
 import TaskBoard from '@/components/TaskBoard';
-import PermissionRequestModal from '@/components/PermissionRequestModal';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useTaskStore } from '@/store/useTaskStore';
 import { useWorkStore } from '@/store/useWorkStore';
 import { notificationService } from '@/services/notificationService';
 import { statusService } from '@/services/statusService';
 import { workService } from '@/services/workService';
-import { getCachedPermissionStatus } from '@/lib/permissionManager';
 import { ActivityStatus, IEmployeeStatusRecord, INotification, IWorkdayTotals } from '@/types';
 
 const TAB_DEFINITIONS = [
@@ -40,9 +38,6 @@ export default function EmployeeDashboard() {
   const [notifications, setNotifications] = useState<INotification[]>([]);
   const [workTotals, setWorkTotals] = useState<IWorkdayTotals | null>(null);
   const [activeTab, setActiveTab] = useState<(typeof TAB_DEFINITIONS)[number]['id']>('work');
-  const [showPermissionModal, setShowPermissionModal] = useState(
-    () => !getCachedPermissionStatus()
-  );
 
   useEffect(() => {
     if (!user) return;
@@ -122,12 +117,12 @@ export default function EmployeeDashboard() {
             <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm">
               <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Session status</p>
               <p className="text-2xl font-semibold text-slate-900">
-                {session?.status === 'active' ? 'Active focus' : 'Idle tracking'}
+                {session?.status === 'active' ? 'Active focus' : 'Not started'}
               </p>
               <p className="mt-2 text-sm text-slate-500">
                 {session?.startTime
                   ? `Tracking since ${new Date(session.startTime).toLocaleTimeString()}`
-                  : 'Your work timer begins as soon as you land here.'}
+                  : 'Start from Work Mode; activity is not recorded before then.'}
               </p>
             </div>
             <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm">
@@ -135,14 +130,14 @@ export default function EmployeeDashboard() {
               <p className="text-3xl font-semibold text-slate-900">
                 {formatMinutes(Math.round((workTotals?.activeMs || 0) / 60000))}
               </p>
-              <p className="mt-2 text-sm text-slate-500">Idle auto-pauses after inactivity.</p>
+              <p className="mt-2 text-sm text-slate-500">Calculated only during an active session.</p>
             </div>
             <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm">
               <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Idle time</p>
               <p className="text-3xl font-semibold text-slate-900">
                 {workTotals?.idleMs ? `${Math.round(workTotals.idleMs / 60000)}m` : 'Fresh'}
               </p>
-              <p className="mt-2 text-sm text-slate-500">We resume tracking as soon as you return.</p>
+              <p className="mt-2 text-sm text-slate-500">Idle events require an active session.</p>
             </div>
           </div>
         );
@@ -153,11 +148,6 @@ export default function EmployeeDashboard() {
 
   return (
     <div className="space-y-6">
-      <PermissionRequestModal
-        isOpen={showPermissionModal}
-        onClose={() => setShowPermissionModal(false)}
-        employeeName={user?.name || 'Employee'}
-      />
       <section className="grid gap-6 lg:grid-cols-[1.2fr,0.8fr]">
         <div className="rounded-3xl border border-slate-200 bg-white/80 p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
           <div className="flex items-center justify-between">
@@ -176,7 +166,7 @@ export default function EmployeeDashboard() {
               <p className="mt-2 text-xs text-slate-500">
                 {status?.sessionStart
                   ? `Session started ${new Date(status.sessionStart).toLocaleTimeString()}`
-                  : 'Auto timer starts on login.'}
+                  : 'Start a session from Work Mode.'}
               </p>
             </div>
             <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">

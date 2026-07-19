@@ -9,7 +9,6 @@ import {
   revokeRefreshToken
 } from '../utils/tokenService.js';
 import { recordAuditLog } from '../utils/auditLogger.js';
-import { startSession } from '../services/workSessionService.js';
 
 const buildContext = (req) => ({
   ip: req.ip,
@@ -44,8 +43,6 @@ const completeLogin = async (req, res, user, auditMetadata = {}) => {
   user.lastActiveAt = new Date();
   await attachRoleMetadata(user);
   await user.save();
-  await startSession(user._id, user._id);
-
   const tokens = await issueSessionTokens(user, buildContext(req));
   await recordAuditLog({
     user: user._id,
