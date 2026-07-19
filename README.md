@@ -51,6 +51,7 @@ npm run lint --prefix frontend
 npm run build --prefix frontend
 npm audit --prefix backend
 npm audit --prefix frontend
+node scripts/check-markdown-links.mjs
 ```
 
 The backend suite contains five CORS tests and two MongoDB-backed authenticated workflow tests. See [the current test report](docs/TEST_REPORT.md).

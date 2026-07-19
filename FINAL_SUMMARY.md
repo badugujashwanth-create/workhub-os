@@ -1,25 +1,28 @@
 # Current engineering status
 
-This file replaces an older deployment summary whose examples were unsafe to reuse.
+Updated: 2026-07-20
 
-## Verified on 2026-07-18
+## Verified
 
-- Backend: five CORS security-boundary tests pass.
-- Frontend: ESLint passes.
-- Frontend: Next.js production build passes and generates 37 routes.
-- Documentation: architecture, demo, interview, testing, deployment, and improvement guidance are present.
+- Seven backend tests pass: five CORS cases and two authenticated MongoDB-backed project/task workflows.
+- Cross-project employee/manager reads and writes are denied; employee task updates are allowlisted.
+- Frontend ESLint and the 37-route Next.js production build pass.
+- Backend and frontend dependency audits report zero known vulnerabilities.
+- The in-memory demo launcher starts both services, verifies the synthetic workflow, and cleans up child processes.
+- The tracked current tree is clean under Gitleaks.
 
 ## Not verified
 
-- MongoDB-backed backend startup in this audit session
-- Full authentication, role authorization, and cross-user resource isolation
-- Socket/WebRTC behavior with production TURN/STUN
-- A safe public backend deployment
+- Production credential rotation/revocation or provider-log review.
+- A newly deployed public backend/database.
+- WebRTC behavior with an owned TURN environment.
+- External AI-provider behavior or real employee monitoring.
+- Current-build browser screenshots and the replacement long-form video.
 
 ## Security action required
 
-Credential-like provider/JWT examples existed in earlier documentation. Revoke or rotate any matching live value, invalidate dependent sessions, and review provider logs. The current tree contains placeholders only, but Git history remains unchanged by policy.
+Five historical Gitleaks findings remain in earlier documentation commits. Treat matching provider/JWT material as compromised: rotate or revoke it, invalidate dependent sessions, and review provider/deployment logs. History is intentionally preserved, and current documentation contains only placeholders or local-demo values.
 
-## Portfolio decision
+## Portfolio position
 
-WorkHub demonstrates useful architecture and breadth, but it is not in the primary featured six until a database-backed authenticated workflow is integration-tested. Its video and documentation remain valid secondary evidence when read with these limitations.
+WorkHub is a Tier 2 supporting product with a credible verified core. Its public case study should lead with the role/project/task authorization workflow, not imply that every dashboard or real-time surface has equal production evidence.

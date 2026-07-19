@@ -1,6 +1,6 @@
 # Deployment and rollback
 
-This repository has a verified frontend build and backend security-boundary tests. A public backend deployment is not verified because it requires MongoDB, environment secrets, real-time infrastructure, and authorization testing.
+This repository has a verified frontend build, dependency audits, and authenticated project/task integration tests. A new public backend deployment is not yet verified because it still requires owned infrastructure and completed credential rotation.
 
 ## Security prerequisite
 
@@ -15,7 +15,7 @@ Earlier document revisions contained credential-like examples. Treat any value c
 5. Run `npm ci` and `npm test` in `backend`.
 6. Start the service and verify `/api/health`.
 7. Create accounts through the application bootstrap flow; there is no documented default administrator password.
-8. Verify role authorization and cross-user resource isolation before allowing public traffic.
+8. Run the existing role/project/task authorization suite and add deployment-specific checks before allowing public traffic.
 
 ## Frontend checklist
 
@@ -29,4 +29,4 @@ Keep the last known-good deployment artifact and database backup. If authenticat
 
 ## Current limitation
 
-The portfolio release does not publish or claim a newly verified WorkHub backend. The existing demo video is preferable to an insecure deployment.
+The release does not claim a newly verified WorkHub backend. The deterministic local demo remains the public proof path until infrastructure ownership and rotation gates are complete.
