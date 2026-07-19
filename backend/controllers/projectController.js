@@ -2,18 +2,31 @@ import Project from '../models/Project.js';
 import Task from '../models/Task.js';
 import { respondIfInvalidObjectId } from '../utils/objectId.js';
 import { recordAuditLog } from '../utils/auditLogger.js';
+import {
+  canManageProject,
+  canViewProject,
+  projectVisibilityFilter
+} from '../services/workspaceAccessService.js';
 
-const canManageProjects = (user) => ['admin', 'manager'].includes(user.role);
+const PROJECT_FIELDS = [
+  'name',
+  'code',
+  'description',
+  'status',
+  'priority',
+  'members',
+  'startDate',
+  'dueDate',
+  'tags'
+];
+
+const pickFields = (payload, fields) =>
+  Object.fromEntries(
+    fields.filter((field) => payload?.[field] !== undefined).map((field) => [field, payload[field]])
+  );
 
 export const listProjects = async (req, res) => {
-  const filter = {};
-  if (req.user.role === 'employee') {
-    filter.$or = [{ members: req.user._id }, { owner: req.user._id }];
-  } else if (req.user.role === 'manager') {
-    filter.$or = [{ owner: req.user._id }, { managers: req.user._id }];
-  }
-
-  const projects = await Project.find(filter)
+  const projects = await Project.find(projectVisibilityFilter(req.user))
     .populate('owner', 'name email')
     .populate('managers', 'name email')
     .populate('members', 'name email role')
@@ -22,13 +35,13 @@ export const listProjects = async (req, res) => {
 };
 
 export const createProject = async (req, res) => {
-  if (!canManageProjects(req.user))
-    return res.status(403).json({ message: 'Forbidden' });
   const payload = req.body || {};
+  const safePayload = pickFields(payload, PROJECT_FIELDS);
+  const isAdmin = req.user.role === 'admin';
   const project = await Project.create({
-    ...payload,
-    owner: payload.owner || req.user._id,
-    managers: payload.managers || [req.user._id]
+    ...safePayload,
+    owner: isAdmin && payload.owner ? payload.owner : req.user._id,
+    managers: isAdmin && payload.managers ? payload.managers : [req.user._id]
   });
   await recordAuditLog({
     user: req.user._id,
@@ -51,10 +64,13 @@ export const updateProject = async (req, res) => {
   if (respondIfInvalidObjectId(res, req.params.id, 'project id')) return;
   const project = await Project.findById(req.params.id);
   if (!project) return res.status(404).json({ message: 'Project not found' });
-  if (!canManageProjects(req.user) && String(project.owner) !== String(req.user._id))
+  if (!canManageProject(req.user, project))
     return res.status(403).json({ message: 'Forbidden' });
 
-  Object.assign(project, req.body);
+  const allowedFields = req.user.role === 'admin'
+    ? [...PROJECT_FIELDS, 'owner', 'managers']
+    : PROJECT_FIELDS;
+  Object.assign(project, pickFields(req.body, allowedFields));
   await project.save();
   await recordAuditLog({
     user: req.user._id,
@@ -81,11 +97,17 @@ export const getProject = async (req, res) => {
     .populate('managers', 'name email')
     .populate('members', 'name email role');
   if (!project) return res.status(404).json({ message: 'Project not found' });
+  if (!canViewProject(req.user, project))
+    return res.status(403).json({ message: 'Forbidden' });
   res.json(project);
 };
 
 export const getProjectTasks = async (req, res) => {
   if (respondIfInvalidObjectId(res, req.params.id, 'project id')) return;
+  const project = await Project.findById(req.params.id);
+  if (!project) return res.status(404).json({ message: 'Project not found' });
+  if (!canViewProject(req.user, project))
+    return res.status(403).json({ message: 'Forbidden' });
   const tasks = await Task.find({ project: req.params.id })
     .populate('assignedTo', 'name email role')
     .populate('assignedBy', 'name email role');

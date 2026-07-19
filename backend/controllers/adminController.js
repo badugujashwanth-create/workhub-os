@@ -8,6 +8,7 @@ import Project from '../models/Project.js';
 import { getOnlineUsers } from '../socket.js';
 import { generateLogReport } from '../utils/pdfGenerator.js';
 import { fetchRecentAuditLogs } from '../utils/auditLogger.js';
+import { manageableProjectIds } from '../services/workspaceAccessService.js';
 
 const asHours = (minutes = 0) => Math.round((minutes / 60) * 10) / 10;
 
@@ -187,7 +188,12 @@ export const monthlyReport = async (req, res) => {
 };
 
 export const getAdminTasks = async (req, res) => {
-  const tasks = await Task.find()
+  const filter = {};
+  if (req.user.role === 'manager') {
+    const projectIds = await manageableProjectIds(req.user, Project);
+    filter.$or = [{ project: { $in: projectIds } }, { assignedBy: req.user._id }];
+  }
+  const tasks = await Task.find(filter)
     .populate('assignedTo', 'name email role')
     .populate('assignedBy', 'name email role')
     .populate('comments.user', 'name email role')
