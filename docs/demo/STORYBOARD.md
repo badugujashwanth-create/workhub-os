@@ -2,17 +2,17 @@
 
 | Time | Frame | Evidence |
 |---:|---|---|
-| 0:00–0:25 | Title and boundary | Product thesis plus synthetic/in-memory label |
-| 0:25–0:50 | Login | Seeded admin demo entry |
-| 0:50–1:15 | Operations overview | Dashboard and scoped project |
-| 1:15–1:40 | Assignment | Project-member task assignment |
-| 1:40–2:00 | Manager result | Assigned task and status |
-| 2:00–2:25 | Role switch | Seeded employee entry |
-| 2:25–2:55 | Employee task | Same assignment visible to the assignee |
-| 2:55–3:15 | State change | Status/comment persisted |
-| 3:15–3:45 | Verification | Administrative view sees the change |
-| 3:45–4:05 | Work session | Bounded employee session evidence |
-| 4:05–4:35 | Engineering proof | Tests, audits, and architecture |
-| 4:35–5:00 | Honest close | Environment-dependent features and rotation checkpoint |
+| 0:00–0:25 | Login boundary | Synthetic demo label and separate role paths |
+| 0:25–0:50 | Admin dashboard | Role-scoped operational overview |
+| 0:50–1:15 | Task register | Deterministic assignment visible to the manager |
+| 1:15–1:40 | Task detail | Assignee, assigner, priority, due date, and discussion |
+| 1:40–2:05 | Employee dashboard | No session was created by login |
+| 2:05–2:35 | Work Mode before start | Explicit collection and media-permission boundaries |
+| 2:35–3:05 | Active session | Reversible, user-initiated session state |
+| 3:05–3:35 | Employee task board | Same assignment visible to Eli |
+| 3:35–4:00 | Status and comment | Review transition and safe update persisted |
+| 4:00–4:30 | Explicit stop | Session collection ended before logout |
+| 4:30–5:05 | Manager verification | Review state and employee comment visible to admin |
+| 5:05–5:55 | Honest close | Verification evidence and external human gates |
 
-Capture at 1280×720 or 1920×1080. Leave pauses after meaningful state changes, keep pointer motion deliberate, and inspect at least ten milestone frames.
+Capture at 1280×720. Leave pauses after meaningful state changes, keep pointer motion deliberate, and inspect all twelve extracted milestone frames.

@@ -1,17 +1,30 @@
 # WorkHub OS demo script
 
-**Target length:** 4–5 minutes
-**Format:** Browser plus short terminal evidence
+**Target length:** 5–6 minutes
+
+**Format:** Real Chromium product simulation with generated narration and captions
+
 **Data:** Synthetic in-memory records only
 
 ## Walkthrough
 
-1. **Title and boundary (0:00–0:25):** Introduce WorkHub as a tested workplace-operations prototype using synthetic, resettable data.
-2. **Admin setup (0:25–1:15):** Use the seeded admin account and inspect the dashboard, scoped project, employee, and task evidence.
-3. **Assignment (1:15–2:00):** Open or create the deterministic launch-readiness task and show its project/member relationship.
-4. **Employee execution (2:00–3:15):** Sign in as Eli, show that no session started automatically, explicitly start Work Mode, open the assigned task, change status, and add a safe update.
-5. **Manager verification (3:15–4:05):** Return to the administrative view and verify the same persisted status and audit context.
-6. **Architecture and proof (4:05–4:35):** Show the seven-test suite, zero-vulnerability audits, and frontend build boundary.
-7. **Limitations (4:35–5:00):** State that calls, provider AI, production monitoring, and credential rotation are not demonstrated.
+1. **Boundary and admin entry:** State the synthetic-data and non-production boundary, then use the seeded admin account.
+2. **Manager evidence:** Inspect the dashboard, task register, and deterministic launch-readiness task assigned to Eli.
+3. **Employee entry:** Sign out, use the seeded employee account, and show that login did not start a work session.
+4. **Explicit consent:** Open Work Mode, read the collection boundary, and deliberately start the session.
+5. **Employee execution:** Open the assigned task board, move the deterministic task to review, and add a safe progress comment.
+6. **Explicit stop:** Return to Work Mode and stop the session before signing out.
+7. **Manager verification:** Sign in as admin again and verify the same persisted review status and employee comment.
+8. **Proof and limitations:** Narrate the test, build, audit, secret-scan, provider, deployment, and credential-rotation boundaries.
 
 Never show environment files, tokens, unrelated applications, notifications, bookmarks, personal accounts, or private URLs. Do not edit footage to imply an external integration succeeded.
+
+## Record
+
+After the repository checks pass and Chromium use is authorized:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\record-demo.ps1
+```
+
+The script starts a clean in-memory demo, verifies the API workflow, records the browser simulation, adds narration, extracts inspection frames, validates duration/resolution/audio, and writes the SHA-256 checksum.

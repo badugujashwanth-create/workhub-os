@@ -1,19 +1,178 @@
 [CmdletBinding()]
-param([Parameter(Mandatory = $true)][string]$BaseUrl)
+param(
+  [string]$BaseUrl = 'http://127.0.0.1:3000',
+  [switch]$UseExistingServices,
+  [switch]$SkipBrowserInstall,
+  [string]$FfmpegPath = ''
+)
 
 $ErrorActionPreference = 'Stop'
-$repoRoot = Split-Path -Parent $PSScriptRoot
-Set-Location $repoRoot
-$env:DEMO_BASE_URL = $BaseUrl
+$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+$frontendDir = Join-Path $repoRoot 'frontend'
+$backendDir = Join-Path $repoRoot 'backend'
+$demoDir = Join-Path $repoRoot 'docs\demo'
+$verificationDir = Join-Path $demoDir 'verification'
+[IO.Directory]::CreateDirectory($verificationDir) | Out-Null
+$ownedProcesses = @()
 
-npm install --no-save --package-lock=false --ignore-scripts '@playwright/test@1.57.0'
-npx playwright install chromium
-npx playwright test scripts/demo.spec.ts --workers=1
+function Stop-ProcessTree([int]$ProcessId) {
+  $children = Get-CimInstance Win32_Process -Filter "ParentProcessId=$ProcessId" -ErrorAction SilentlyContinue
+  foreach ($child in $children) { Stop-ProcessTree -ProcessId $child.ProcessId }
+  Stop-Process -Id $ProcessId -Force -ErrorAction SilentlyContinue
+}
 
-$video = Get-ChildItem -Path 'test-results' -Filter '*.webm' -Recurse |
-  Sort-Object LastWriteTime -Descending |
-  Select-Object -First 1
-if (-not $video) { throw 'Playwright completed without producing a WebM video.' }
-Copy-Item -LiteralPath $video.FullName -Destination 'docs/demo/demo.webm' -Force
-Write-Host 'Created docs/demo/demo.webm. Review every frame before committing.'
+function Resolve-Ffmpeg([string]$RequestedPath) {
+  if ($RequestedPath) { return (Resolve-Path $RequestedPath).Path }
+  if ($env:WORKHUB_FFMPEG) { return (Resolve-Path $env:WORKHUB_FFMPEG).Path }
+  $installed = Get-Command ffmpeg -ErrorAction SilentlyContinue
+  if ($null -ne $installed) { return $installed.Source }
+  $cached = Get-ChildItem (Join-Path $env:TEMP 'nira-ffmpeg-8.1.2') -Recurse -Filter ffmpeg.exe -ErrorAction SilentlyContinue | Select-Object -First 1
+  if ($null -ne $cached) { return $cached.FullName }
+  throw 'FFmpeg is required. Pass -FfmpegPath or set WORKHUB_FFMPEG.'
+}
 
+function Wait-ForDemo {
+  for ($attempt = 0; $attempt -lt 120; $attempt += 1) {
+    try {
+      $api = Invoke-RestMethod -Uri 'http://127.0.0.1:5000/api/health' -TimeoutSec 2
+      $web = Invoke-WebRequest -Uri "$BaseUrl/login" -UseBasicParsing -TimeoutSec 2
+      if ($api.status -eq 'ok' -and $web.StatusCode -eq 200) { return }
+    } catch {
+      Start-Sleep -Seconds 1
+    }
+  }
+  throw 'Demo services did not become healthy within 120 seconds.'
+}
+
+function New-Narration([string]$OutputPath) {
+  Add-Type -AssemblyName System.Speech
+  $paragraphs = (Get-Content -Raw -Encoding utf8 (Join-Path $demoDir 'NARRATION.md')) -split '(?:\r?\n){2,}' |
+    Where-Object { $_ -and $_ -notmatch '^#' } |
+    ForEach-Object { ($_ -replace '[`*_#]', '').Trim() }
+  $builder = New-Object System.Speech.Synthesis.PromptBuilder
+  foreach ($paragraph in $paragraphs) {
+    $builder.AppendText($paragraph)
+    $builder.AppendBreak([TimeSpan]::FromSeconds(3))
+  }
+  $voice = New-Object System.Speech.Synthesis.SpeechSynthesizer
+  try {
+    $voice.Rate = -1
+    $voice.Volume = 90
+    $voice.SetOutputToWaveFile($OutputPath)
+    $voice.Speak($builder)
+  } finally {
+    $voice.Dispose()
+  }
+}
+
+$ffmpeg = Resolve-Ffmpeg $FfmpegPath
+$ffprobe = Join-Path (Split-Path -Parent $ffmpeg) 'ffprobe.exe'
+if (-not (Test-Path -LiteralPath $ffprobe)) { throw 'ffprobe.exe was not found beside FFmpeg.' }
+
+try {
+  if (-not $UseExistingServices) {
+    $env:MONGO_URI = 'memory'
+    $env:SEED_TEMP_DATA = 'true'
+    $env:JWT_SECRET = 'local-demo-only-change-me'
+    $env:CLIENT_URL = 'http://127.0.0.1:3000,http://localhost:3000'
+    $env:NEXT_PUBLIC_API_URL = 'http://127.0.0.1:5000/api'
+    $env:NEXT_PUBLIC_WS_URL = 'http://127.0.0.1:5000'
+    $ownedProcesses += Start-Process node -ArgumentList 'server.js' -WorkingDirectory $backendDir -WindowStyle Hidden -PassThru
+    $ownedProcesses += Start-Process node -ArgumentList 'node_modules/next/dist/bin/next', 'dev' -WorkingDirectory $frontendDir -WindowStyle Hidden -PassThru
+  }
+
+  Wait-ForDemo
+  Push-Location $repoRoot
+  try {
+    node scripts/verify-demo-workflow.mjs
+    if ($LASTEXITCODE -ne 0) { throw 'The deterministic API workflow failed before recording.' }
+  } finally { Pop-Location }
+
+  $recordingStartedAt = Get-Date
+  $env:DEMO_BASE_URL = $BaseUrl.TrimEnd('/')
+  Push-Location $frontendDir
+  try {
+    if (-not $SkipBrowserInstall) {
+      npm exec playwright install chromium
+      if ($LASTEXITCODE -ne 0) { throw 'Chromium installation failed.' }
+    }
+    npm exec playwright test tests/e2e/workhub-walkthrough.spec.ts -- --workers=1
+    if ($LASTEXITCODE -ne 0) { throw 'The complete product simulation failed.' }
+  } finally { Pop-Location }
+
+  $sourceVideo = Get-ChildItem -Path (Join-Path $frontendDir 'test-results') -Filter '*.webm' -Recurse |
+    Where-Object { $_.LastWriteTime -ge $recordingStartedAt } |
+    Sort-Object LastWriteTime -Descending |
+    Select-Object -First 1
+  if ($null -eq $sourceVideo) { throw 'Playwright completed without producing a new WebM video.' }
+
+  $runId = [guid]::NewGuid().ToString('N')
+  $workDir = Join-Path $env:TEMP "workhub-video-$runId"
+  [IO.Directory]::CreateDirectory($workDir) | Out-Null
+  $narration = Join-Path $workDir 'narration.wav'
+  $output = Join-Path $demoDir 'demo.webm'
+  New-Narration $narration
+
+  $sourceProbe = (& $ffprobe -v error -show_entries 'format=duration' -of json $sourceVideo.FullName) | Out-String | ConvertFrom-Json
+  $duration = [double]$sourceProbe.format.duration
+  if ($duration -lt 180) { throw "Recorded simulation is too short: $duration seconds." }
+
+  $audioFilter = "[1:a]apad=pad_dur=$duration[a]"
+  & $ffmpeg -hide_banner -loglevel warning -y -i $sourceVideo.FullName -i $narration `
+    -filter_complex $audioFilter -map 0:v:0 -map '[a]' `
+    -c:v libvpx-vp9 -crf 38 -b:v 0 -deadline realtime -cpu-used 8 -row-mt 1 `
+    -c:a libopus -b:a 64k -t $duration $output
+  if ($LASTEXITCODE -ne 0) { throw 'Final demo encoding failed.' }
+
+  & $ffmpeg -hide_banner -loglevel error -y -ss '00:01:25' -i $output -frames:v 1 (Join-Path $demoDir 'demo-thumbnail.png')
+  $frameTimes = @(
+    '00:00:10', '00:00:35', '00:01:00', '00:01:30',
+    '00:02:00', '00:02:30', '00:03:00', '00:03:30',
+    '00:04:00', '00:04:30', '00:05:00', '00:05:25'
+  )
+  for ($index = 0; $index -lt $frameTimes.Count; $index += 1) {
+    & $ffmpeg -hide_banner -loglevel error -y -ss $frameTimes[$index] -i $output -frames:v 1 `
+      (Join-Path $verificationDir ('{0:D2}-frame.png' -f ($index + 1)))
+  }
+
+  $probeJson = (& $ffprobe -v error -show_entries 'format=duration,size:stream=codec_type,codec_name,width,height' -of json $output) | Out-String
+  $probe = $probeJson | ConvertFrom-Json
+  $videoStream = $probe.streams | Where-Object { $_.codec_type -eq 'video' } | Select-Object -First 1
+  $audioStream = $probe.streams | Where-Object { $_.codec_type -eq 'audio' } | Select-Object -First 1
+  if ([double]$probe.format.duration -lt 180 -or $videoStream.width -ne 1280 -or $videoStream.height -ne 720 -or $null -eq $audioStream) {
+    throw 'Demo acceptance failed.'
+  }
+
+  $hash = (Get-FileHash -Algorithm SHA256 $output).Hash.ToLower()
+  $evidence = [ordered]@{
+    generated_at_utc = [DateTime]::UtcNow.ToString('o')
+    duration_seconds = [Math]::Round([double]$probe.format.duration, 3)
+    width = $videoStream.width
+    height = $videoStream.height
+    video_codec = $videoStream.codec_name
+    audio_codec = $audioStream.codec_name
+    browser = 'Chromium'
+    data_boundary = 'Synthetic in-memory seed'
+    workflow = 'Admin assignment -> employee consent -> status/comment -> manager verification'
+    captions = 'demo-captions.vtt'
+    sha256 = $hash
+    bytes = (Get-Item $output).Length
+    verification_frames = $frameTimes.Count
+    frame_timestamps = $frameTimes
+  }
+  [IO.File]::WriteAllText(
+    (Join-Path $verificationDir 'verification.json'),
+    ($evidence | ConvertTo-Json) + [Environment]::NewLine,
+    [Text.UTF8Encoding]::new($false)
+  )
+  [IO.File]::WriteAllText(
+    (Join-Path $demoDir 'demo.sha256'),
+    "$hash  demo.webm$([Environment]::NewLine)",
+    [Text.UTF8Encoding]::new($false)
+  )
+  $evidence | ConvertTo-Json
+} finally {
+  foreach ($process in $ownedProcesses) {
+    if ($process -and -not $process.HasExited) { Stop-ProcessTree -ProcessId $process.Id }
+  }
+}
