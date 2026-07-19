@@ -1,17 +1,25 @@
-# Test report — WorkHub
+# Test report — WorkHub OS
 
-Audited on 2026-07-18 from the `portfolio-polish` branch on Windows.
+Audited on 2026-07-20 from `product-completion-v1.1` on Windows.
 
-| Command | Result | Evidence / notes |
+| Command | Result | Evidence |
 |---|---|---|
-| `backend: npm ci` | Pass | Backend dependencies installed; Multer 1.x deprecation/security warning remains a dependency-upgrade item |
-| `backend: npm test` | Pass | 5 Node tests verify CORS defaults, normalization/deduplication, scoped Netlify previews, suffix-spoof rejection, and local/server requests |
-| `frontend: npm ci` | Pass | Frontend dependencies installed |
-| `frontend: npm run lint` | Pass | No lint errors |
-| `frontend: npm run build` | Pass | Next.js production build completed; 37 routes generated |
-| Backend startup | Not run | Requires configured MongoDB and environment values |
-| WebRTC/socket workflow | Not run | Requires a running socket server and TURN/STUN configuration |
+| `backend: npm test` | Pass | Seven tests: five CORS cases and two authenticated MongoDB-backed project/task flows |
+| `backend: npm audit --audit-level=low` | Pass | Zero known vulnerabilities in the complete dependency tree |
+| `frontend: npm run lint` | Pass | ESLint completed without errors |
+| `frontend: npm run build` | Pass | Next.js production build completed and generated 37 routes |
+| `frontend: npm audit --audit-level=low` | Pass | Zero known vulnerabilities in the complete dependency tree |
+| Deterministic demo verifier | Implemented | Reuses synthetic project/task state against a healthy local API |
+| WebRTC/provider workflow | Not claimed | Requires browser permissions, TURN/provider configuration, and separate evidence |
+
+## Verified security behavior
+
+- Unrelated employees cannot read foreign projects or tasks.
+- A manager cannot read, rename, or move work belonging to another manager’s project.
+- Employee task updates allow status changes without accepting title, assignee, or project mass assignment.
+- Manager task lists are restricted to projects they manage or tasks they assigned.
+- CORS rejects suffix spoofing and previews belonging to another Netlify site.
 
 ## Overall status
 
-The frontend and the newly tested CORS security boundary are verified. Authenticated workspace/project/task authorization, database integration, real-time calls, and external services are not inferred to work from these checks. WorkHub remains a secondary case study rather than a featured project until a database-backed primary workflow is integration-tested.
+The bounded role/project/task workflow is verified against an ephemeral MongoDB instance. This evidence does not prove production hosting, real-time media reliability, external AI behavior, or account-owner credential rotation.

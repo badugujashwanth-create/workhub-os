@@ -6,7 +6,7 @@ Use the package manager and lockfile already committed to this repository. Confi
 
 ## The application starts but a feature is unavailable
 
-Check the browser or terminal error first, then verify the documented environment variables and dependent services. Backend validation requires a MongoDB instance and environment configuration; dependency installation warns that Multer 1.x should be upgraded.
+Check the browser or terminal error first, then verify the documented environment variables and dependent services. The local demo can use the documented ephemeral database; production-like validation requires an explicitly owned MongoDB environment.
 
 ## Tests and builds
 

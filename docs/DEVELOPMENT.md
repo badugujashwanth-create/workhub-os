@@ -2,28 +2,28 @@
 
 ## Purpose
 
-Full-stack workplace operations system covering tasks, attendance, permissions, collaboration, documents, calls, reports, and administration.
+WorkHub is a full-stack workplace-operations prototype covering tasks, projects, work sessions, attendance, permissions, collaboration, documents, calls, reports, and administration.
 
-## Prerequisites
-
-Next.js/TypeScript, Express/Node.js, MongoDB/Mongoose, Socket.IO, Zustand.
-
-## Install
+## Install and run
 
 ```powershell
-npm ci --prefix backend; npm ci --prefix frontend
+npm ci --prefix backend
+npm ci --prefix frontend
+powershell -ExecutionPolicy Bypass -File scripts/run-demo.ps1
 ```
 
-## Run
-
-```powershell
-Run `npm run dev` in both backend and frontend directories
-```
+The demo command uses `MONGO_URI=memory`, synthetic seed data, loopback API/socket URLs, and a local-only JWT secret. For manual development, start each package with `npm run dev`.
 
 ## Verify
 
-- Tests: `Frontend: npm run lint; backend has no automated test script`
-- Build: `npm run build --prefix frontend`
+```powershell
+npm test --prefix backend
+npm run lint --prefix frontend
+npm run build --prefix frontend
+npm audit --prefix backend
+npm audit --prefix frontend
+```
 
-See [TEST_REPORT.md](TEST_REPORT.md) for the latest audited results. Copy example environment files instead of committing real values. Generated dependencies, caches, logs, databases, and build output must remain untracked.
+While both services are healthy, `node scripts/verify-demo-workflow.mjs` verifies admin login, project discovery, task assignment, employee visibility/status, work-session state, and manager-side persistence.
 
+Copy example environment files instead of committing real values. Generated dependencies, caches, logs, databases, uploads, and build output must remain untracked.

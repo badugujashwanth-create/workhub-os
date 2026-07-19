@@ -1,4 +1,5 @@
 ﻿import express from 'express';
+import 'dotenv/config';
 import http from 'http';
 import path from 'path';
 import cors from 'cors';
@@ -6,7 +7,6 @@ import helmet from 'helmet';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
-import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
 import connectDB from './config/db.js';
 import { getAllowedOrigins, isOriginAllowed } from './config/origins.js';
@@ -40,8 +40,6 @@ import teamChatRoutes from './routes/teamChatRoutes.js';
 import leaveRoutes from './routes/leaveRoutes.js';
 import workPermissionRoutes from './routes/workPermissionRoutes.js';
 import { initSocket } from './socket.js';
-
-dotenv.config();
 
 const app = express();
 app.disable('etag');

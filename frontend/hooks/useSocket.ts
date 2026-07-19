@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useSocketStore } from '@/store/useSocketStore';
 
-const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'https://zettalogix-workos.onrender.com';
+const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'http://127.0.0.1:5000';
 const HEARTBEAT_INTERVAL_MS = 30_000;
 const ACTIVITY_THROTTLE_MS = 2_000;
 

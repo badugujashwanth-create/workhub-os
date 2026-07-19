@@ -1,16 +1,17 @@
 # WorkHub OS demo script
 
-**Target length:** 60–90 seconds  
-**Format:** Browser  
-**Data:** synthetic, repository-provided demo data, or public non-personal examples only
+**Target length:** 4–5 minutes
+**Format:** Browser plus short terminal evidence
+**Data:** Synthetic in-memory records only
 
 ## Walkthrough
 
-1. **Title (0–5s):** Show “WorkHub OS” and its one-sentence problem statement.
-2. **Starting state (5–15s):** Show the clean entry point and identify the intended user.
-3. **Primary workflow (15–55s):** Open the role-based interface; show dashboard, tasks, work permission, collaboration, and reporting surfaces with synthetic data; explain MongoDB and backend requirements.
-4. **Architecture (55–75s):** Show the architecture guide and name the main runtime boundaries.
-5. **Close (75–90s):** Display the project name, badugujashwanth-create, current status, and one honest limitation.
+1. **Title and boundary (0:00–0:25):** Introduce WorkHub as a tested workplace-operations prototype using synthetic, resettable data.
+2. **Admin setup (0:25–1:15):** Use the seeded admin account and inspect the dashboard, scoped project, employee, and task evidence.
+3. **Assignment (1:15–2:00):** Open or create the deterministic launch-readiness task and show its project/member relationship.
+4. **Employee execution (2:00–3:15):** Sign in as Eli, open the assigned task, change status, add a safe update, and show work-session state.
+5. **Manager verification (3:15–4:05):** Return to the administrative view and verify the same persisted status and audit context.
+6. **Architecture and proof (4:05–4:35):** Show the seven-test suite, zero-vulnerability audits, and frontend build boundary.
+7. **Limitations (4:35–5:00):** State that calls, provider AI, production monitoring, and credential rotation are not demonstrated.
 
-Do not show environment files, tokens, browser bookmarks, notifications, real user accounts, or private URLs. Do not edit the footage to imply an integration succeeded when it did not.
-
+Never show environment files, tokens, unrelated applications, notifications, bookmarks, personal accounts, or private URLs. Do not edit footage to imply an external integration succeeded.

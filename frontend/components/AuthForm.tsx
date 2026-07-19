@@ -67,7 +67,7 @@ export default function AuthForm({ mode }: Props) {
             <div className="absolute left-1/2 top-6 h-14 w-14 -translate-x-1/2 rounded-full bg-white/10 blur-2xl" />
             <p className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-widest">
               <span className="inline-block h-2 w-2 rounded-full bg-emerald-300 animate-pulse" />
-              WorkHub Cloud
+              WorkHub demo workspace
             </p>
             <h1 className="mt-6 text-3xl font-semibold leading-tight lg:text-4xl">
               {mode === 'login' ? 'Welcome back' : 'Create your workspace'}
@@ -79,7 +79,7 @@ export default function AuthForm({ mode }: Props) {
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               {[
                 { title: 'Focus scoring', desc: 'Live score based on activity + idle time.' },
-                { title: 'AI summaries', desc: 'Daily recaps with red flags and suggestions.' },
+                { title: 'Optional summaries', desc: 'Provider-backed recaps when explicitly configured.' },
                 { title: 'Task board', desc: 'Drag-friendly columns and quick status updates.' },
                 { title: 'Live pulse', desc: 'Monitor tab switches and active sessions.' }
               ].map((item) => (
@@ -99,7 +99,7 @@ export default function AuthForm({ mode }: Props) {
               </span>
               <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 font-semibold">
                 <span className="h-2 w-2 rounded-full bg-amber-300" />
-                Secure by default
+                Explicit role boundaries
               </span>
             </div>
           </div>
@@ -150,10 +150,11 @@ export default function AuthForm({ mode }: Props) {
             <div className="space-y-3">
               {mode === 'register' && (
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  <label htmlFor="workhub-name" className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                     Full name
                   </label>
                   <input
+                    id="workhub-name"
                     required
                     placeholder="Alex Carter"
                     className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 shadow-inner outline-none transition focus:-translate-y-0.5 focus:border-brand-500 focus:bg-white focus:shadow-lg"
@@ -163,10 +164,11 @@ export default function AuthForm({ mode }: Props) {
                 </div>
               )}
               <div className="space-y-1">
-                <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                <label htmlFor="workhub-email" className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Email
                 </label>
                 <input
+                  id="workhub-email"
                   required
                   type="email"
                   placeholder="you@company.com"
@@ -176,10 +178,11 @@ export default function AuthForm({ mode }: Props) {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                <label htmlFor="workhub-password" className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Password
                 </label>
                 <input
+                  id="workhub-password"
                   required
                   type="password"
                   placeholder="********"
@@ -190,10 +193,11 @@ export default function AuthForm({ mode }: Props) {
               </div>
               {mode === 'register' && (
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  <label htmlFor="workhub-role" className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                     Role
                   </label>
                   <select
+                    id="workhub-role"
                     className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:-translate-y-0.5 focus:border-brand-500 focus:bg-white focus:shadow-lg"
                     value={form.role}
                     onChange={(e) =>
