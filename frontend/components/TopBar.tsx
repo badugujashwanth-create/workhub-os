@@ -1,11 +1,17 @@
 'use client';
 
+import { Menu } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import StatusBadge from '@/components/StatusBadge';
 import { useEmployeeStatus } from '@/hooks/useEmployeeStatus';
 import { ActivityStatus } from '@/types';
 
-export default function TopBar() {
+type Props = {
+  onMenuClick?: () => void;
+  menuOpen?: boolean;
+};
+
+export default function TopBar({ onMenuClick, menuOpen = false }: Props) {
   const { user, logout } = useAuthStore();
   const status = useEmployeeStatus();
   const today = new Date().toLocaleDateString(undefined, {
@@ -21,8 +27,21 @@ export default function TopBar() {
     : 'Engaged inside Work OS';
 
   return (
-    <header className="sticky top-0 z-20 flex flex-col border-b border-slate-200 bg-white/90 px-6 py-4 backdrop-blur shadow-sm md:flex-row md:items-center md:justify-between">
-      <div>
+    <header className="sticky top-0 z-20 flex flex-col border-b border-slate-200 bg-white/90 px-4 py-4 shadow-sm backdrop-blur sm:px-6 md:flex-row md:items-center md:justify-between">
+      <div className="flex items-start gap-3">
+        {onMenuClick && (
+          <button
+            type="button"
+            aria-label="Open navigation"
+            aria-controls="mobile-navigation"
+            aria-expanded={menuOpen}
+            className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm lg:hidden"
+            onClick={onMenuClick}
+          >
+            <Menu className="h-5 w-5" aria-hidden="true" />
+          </button>
+        )}
+        <div>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
           {today}
         </p>
@@ -30,6 +49,7 @@ export default function TopBar() {
           <h1 className="text-xl font-semibold text-slate-900">Hello, {user?.name}</h1>
           <StatusBadge status={statusLabel} label={statusLabel} />
           <p className="text-xs text-slate-500">{subLabel}</p>
+        </div>
         </div>
       </div>
       <div className="mt-4 flex items-center gap-3 md:mt-0">

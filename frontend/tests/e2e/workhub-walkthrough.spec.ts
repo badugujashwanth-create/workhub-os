@@ -18,6 +18,10 @@ test.use({
 });
 
 async function hold(page: Page, milliseconds: number) {
+  if (process.env.DEMO_FAST === 'true') {
+    await page.waitForTimeout(150);
+    return;
+  }
   const points = [
     [1040, 140],
     [940, 260],
@@ -38,17 +42,35 @@ async function hold(page: Page, milliseconds: number) {
 async function capture(page: Page, name: string) {
   await page.screenshot({
     path: path.join(screenshotDirectory, `${name}.png`),
-    fullPage: true,
+    fullPage: false,
   });
 }
 
 async function signInWithDemo(page: Page, role: 'Admin' | 'Employee') {
+  const credentials =
+    role === 'Admin'
+      ? { email: 'admin@workos.dev', password: 'Admin@123' }
+      : { email: 'eli@workos.dev', password: 'Employee@123' };
   await page.getByRole('button', { name: `Use ${role} Demo` }).click();
+  await expect(page.getByLabel('Email')).toHaveValue(credentials.email);
+  await expect(page.getByLabel('Password')).toHaveValue(credentials.password);
   await page.getByRole('button', { name: 'Sign in to WorkHub' }).click();
 }
 
 test('complete consent-bound WorkHub simulation', async ({ page }) => {
   test.setTimeout(420_000);
+  page.on('console', (message) => {
+    if (message.type() === 'error' || message.type() === 'warning') {
+      console.log(`[browser:${message.type()}] ${message.text()}`);
+    }
+  });
+  page.on('pageerror', (error) => console.log(`[browser:pageerror] ${error.message}`));
+  page.on('requestfailed', (request) => {
+    const errorText = request.failure()?.errorText;
+    if (errorText !== 'net::ERR_ABORTED') {
+      console.log(`[browser:requestfailed] ${request.method()} ${request.url()} ${errorText}`);
+    }
+  });
 
   await page.goto(`${baseUrl}/login`, { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('button', { name: 'Use Admin Demo' })).toBeVisible();
@@ -69,7 +91,7 @@ test('complete consent-bound WorkHub simulation', async ({ page }) => {
 
   await page.getByRole('link', { name: taskTitle }).click();
   await expect(page.getByRole('heading', { name: taskTitle })).toBeVisible();
-  await expect(page.getByText('Eli', { exact: true })).toBeVisible();
+  await expect(page.getByText('Eli Flores', { exact: true })).toBeVisible();
   await capture(page, '04-admin-task-detail');
   await hold(page, 20_000);
 

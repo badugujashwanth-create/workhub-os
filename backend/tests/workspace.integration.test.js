@@ -101,6 +101,13 @@ test('authenticated project and task workflow enforces object-level access', asy
   assert.equal(beforeExplicitStart.status, 200);
   assert.equal(beforeExplicitStart.body, null);
 
+  const idempotentStop = await request('/api/work/stop', {
+    token: employeeAToken,
+    method: 'POST'
+  });
+  assert.equal(idempotentStop.status, 200);
+  assert.equal(idempotentStop.body, null);
+
   const explicitStart = await request('/api/work/start', {
     token: employeeAToken,
     method: 'POST'

@@ -79,6 +79,7 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
     set({ loading: true });
     try {
       const data = await authService.login(payload);
+      persistAuth(data);
       let profile = data.user;
       try {
         profile = await authService.me();
@@ -97,6 +98,7 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
     set({ loading: true });
     try {
       const data = await authService.register(payload);
+      persistAuth(data);
       let profile = data.user;
       try {
         profile = await authService.me();

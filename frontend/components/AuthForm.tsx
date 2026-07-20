@@ -63,7 +63,7 @@ export default function AuthForm({ mode }: Props) {
       </div>
       <div className="relative mx-auto flex min-h-screen items-center px-6 py-12 lg:px-12">
         <div className="mx-auto grid w-full max-w-6xl gap-8 rounded-[32px] border border-white/60 bg-white/70 p-8 shadow-2xl backdrop-blur lg:grid-cols-[1.05fr_1fr]">
-          <div className="card relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-indigo-600 to-slate-900 p-8 text-white shadow-xl">
+          <div className="card order-2 relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-indigo-600 to-slate-900 p-8 text-white shadow-xl lg:order-1">
             <div className="absolute left-1/2 top-6 h-14 w-14 -translate-x-1/2 rounded-full bg-white/10 blur-2xl" />
             <p className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-widest">
               <span className="inline-block h-2 w-2 rounded-full bg-emerald-300 animate-pulse" />
@@ -106,7 +106,7 @@ export default function AuthForm({ mode }: Props) {
 
           <form
             onSubmit={handleSubmit}
-            className="relative z-10 h-full rounded-3xl border border-slate-200 bg-white/80 p-8 shadow-xl backdrop-blur-sm"
+            className="relative z-10 order-1 h-full rounded-3xl border border-slate-200 bg-white/80 p-8 shadow-xl backdrop-blur-sm lg:order-2"
           >
             <div className="mb-6 flex items-center justify-between">
               <div>

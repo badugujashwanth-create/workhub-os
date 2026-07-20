@@ -3,6 +3,8 @@ param(
   [string]$BaseUrl = 'http://127.0.0.1:3000',
   [switch]$UseExistingServices,
   [switch]$SkipBrowserInstall,
+  [switch]$SmokeOnly,
+  [switch]$AuditOnly,
   [string]$FfmpegPath = ''
 )
 
@@ -26,9 +28,22 @@ function Resolve-Ffmpeg([string]$RequestedPath) {
   if ($env:WORKHUB_FFMPEG) { return (Resolve-Path $env:WORKHUB_FFMPEG).Path }
   $installed = Get-Command ffmpeg -ErrorAction SilentlyContinue
   if ($null -ne $installed) { return $installed.Source }
-  $cached = Get-ChildItem (Join-Path $env:TEMP 'nira-ffmpeg-8.1.2') -Recurse -Filter ffmpeg.exe -ErrorAction SilentlyContinue | Select-Object -First 1
+  $cache = Join-Path $env:TEMP 'workhub-ffmpeg-8.1.2'
+  $cached = Get-ChildItem $cache -Recurse -Filter ffmpeg.exe -ErrorAction SilentlyContinue | Select-Object -First 1
   if ($null -ne $cached) { return $cached.FullName }
-  throw 'FFmpeg is required. Pass -FfmpegPath or set WORKHUB_FFMPEG.'
+  if ($null -eq (Get-Command gh -ErrorAction SilentlyContinue)) {
+    throw 'FFmpeg is unavailable and GitHub CLI is required for the pinned temporary download.'
+  }
+  [IO.Directory]::CreateDirectory($cache) | Out-Null
+  $zip = Join-Path $cache 'ffmpeg-8.1.2-essentials_build.zip'
+  if (-not (Test-Path -LiteralPath $zip)) {
+    gh release download 8.1.2 -R GyanD/codexffmpeg -p 'ffmpeg-8.1.2-essentials_build.zip' -D $cache
+    if ($LASTEXITCODE -ne 0) { throw 'Pinned FFmpeg download failed.' }
+  }
+  Expand-Archive -LiteralPath $zip -DestinationPath $cache -Force
+  $cached = Get-ChildItem $cache -Recurse -Filter ffmpeg.exe | Select-Object -First 1
+  if ($null -eq $cached) { throw 'The pinned FFmpeg archive did not contain ffmpeg.exe.' }
+  return $cached.FullName
 }
 
 function Wait-ForDemo {
@@ -77,8 +92,15 @@ try {
     $env:CLIENT_URL = 'http://127.0.0.1:3000,http://localhost:3000'
     $env:NEXT_PUBLIC_API_URL = 'http://127.0.0.1:5000/api'
     $env:NEXT_PUBLIC_WS_URL = 'http://127.0.0.1:5000'
+    if (-not (Test-Path -LiteralPath (Join-Path $frontendDir '.next\BUILD_ID'))) {
+      Push-Location $frontendDir
+      try {
+        npm run build
+        if ($LASTEXITCODE -ne 0) { throw 'The frontend production build failed.' }
+      } finally { Pop-Location }
+    }
     $ownedProcesses += Start-Process node -ArgumentList 'server.js' -WorkingDirectory $backendDir -WindowStyle Hidden -PassThru
-    $ownedProcesses += Start-Process node -ArgumentList 'node_modules/next/dist/bin/next', 'dev' -WorkingDirectory $frontendDir -WindowStyle Hidden -PassThru
+    $ownedProcesses += Start-Process node -ArgumentList 'node_modules/next/dist/bin/next', 'start' -WorkingDirectory $frontendDir -WindowStyle Hidden -PassThru
   }
 
   Wait-ForDemo
@@ -90,15 +112,22 @@ try {
 
   $recordingStartedAt = Get-Date
   $env:DEMO_BASE_URL = $BaseUrl.TrimEnd('/')
+  $env:DEMO_FAST = if ($SmokeOnly -or $AuditOnly) { 'true' } else { 'false' }
   Push-Location $frontendDir
   try {
     if (-not $SkipBrowserInstall) {
       npm exec playwright install chromium
       if ($LASTEXITCODE -ne 0) { throw 'Chromium installation failed.' }
     }
-    npm exec playwright test tests/e2e/workhub-walkthrough.spec.ts -- --workers=1
+    $testSpec = if ($AuditOnly) { 'tests/e2e/workhub-audit.spec.ts' } else { 'tests/e2e/workhub-walkthrough.spec.ts' }
+    npm exec playwright test $testSpec -- --workers=1
     if ($LASTEXITCODE -ne 0) { throw 'The complete product simulation failed.' }
   } finally { Pop-Location }
+
+  if ($SmokeOnly -or $AuditOnly) {
+    Write-Host $(if ($AuditOnly) { 'The responsive audit capture completed.' } else { 'The complete browser workflow passed in smoke mode.' })
+    return
+  }
 
   $sourceVideo = Get-ChildItem -Path (Join-Path $frontendDir 'test-results') -Filter '*.webm' -Recurse |
     Where-Object { $_.LastWriteTime -ge $recordingStartedAt } |
@@ -124,7 +153,7 @@ try {
     -c:a libopus -b:a 64k -t $duration $output
   if ($LASTEXITCODE -ne 0) { throw 'Final demo encoding failed.' }
 
-  & $ffmpeg -hide_banner -loglevel error -y -ss '00:01:25' -i $output -frames:v 1 (Join-Path $demoDir 'demo-thumbnail.png')
+  & $ffmpeg -hide_banner -loglevel error -y -ss '00:05:25' -i $output -frames:v 1 (Join-Path $demoDir 'demo-thumbnail.png')
   $frameTimes = @(
     '00:00:10', '00:00:35', '00:01:00', '00:01:30',
     '00:02:00', '00:02:30', '00:03:00', '00:03:30',

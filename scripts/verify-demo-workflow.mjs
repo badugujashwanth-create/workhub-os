@@ -61,6 +61,9 @@ if (beforeStart !== null) throw new Error('A work session started before explici
 await request('/work/start', { token: employee.token, method: 'POST' });
 const currentSession = await request('/work/current', { token: employee.token });
 if (!currentSession) throw new Error('Employee login did not establish a work session.');
+await request('/work/stop', { token: employee.token, method: 'POST' });
+const afterStop = await request('/work/current', { token: employee.token });
+if (afterStop !== null) throw new Error('Explicitly stopped demo session remained active.');
 
 const verified = await request(`/tasks/${task._id}`, { token: admin.token });
 if (verified.status !== 'in_progress') throw new Error('Manager-side verification did not match.');
