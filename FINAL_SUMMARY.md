@@ -10,6 +10,8 @@ Updated: 2026-07-20
 - Backend and frontend dependency audits report zero known vulnerabilities.
 - The in-memory demo launcher starts both services, verifies the synthetic workflow, and cleans up child processes.
 - The tracked current tree is clean under Gitleaks.
+- The 342.728-second Chromium walkthrough includes narration, captions, a thumbnail, checksum metadata, and twelve inspected frames.
+- The responsive audit verifies zero horizontal overflow at 390×844, drawer navigation, keyboard focus, Escape dismissal, and reduced motion.
 
 ## Not verified
 
@@ -17,7 +19,6 @@ Updated: 2026-07-20
 - A newly deployed public backend/database.
 - WebRTC behavior with an owned TURN environment.
 - External AI-provider behavior or real employee monitoring.
-- Current-build browser screenshots and the replacement long-form video.
 
 ## Security action required
 

@@ -11,4 +11,4 @@ Acceptance requires:
 - visual inspection of every extracted frame after generation;
 - matching status, comment, consent, and manager-verification states in the running product.
 
-Generated evidence is intentionally not committed until the recording passes these checks.
+The committed evidence passed these checks on 2026-07-20. See [`INSPECTION.md`](INSPECTION.md) for the frame-by-frame result.

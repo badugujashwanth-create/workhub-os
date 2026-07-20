@@ -11,12 +11,13 @@ The core role/project/task workflow now runs against an ephemeral MongoDB databa
 - Added MongoDB-backed login, happy-path, IDOR, and manager-scope regression tests.
 - Made local frontend defaults explicit and loopback-only.
 - Added a one-command in-memory startup path and deterministic workflow verifier.
+- Recorded and inspected a 5:42 narrated Chromium walkthrough with captions and checksum evidence.
+- Removed mobile horizontal overflow with a responsive navigation drawer and mobile-first login order.
+- Added browser evidence for keyboard focus, reduced motion, and the 390×844 responsive state.
 
-## Remaining P1 work
+## Remaining human or external gates
 
-- Record and inspect a full recruiter walkthrough of the verified workflow.
 - Rotate the previously exposed provider credential and reusable JWT outside the repository, then review deployment logs.
-- Add browser evidence for keyboard, responsive, and reduced-motion states.
 - Add real-time call tests only when an owned TURN/media test environment is authorized.
 
 ## Excluded expansion

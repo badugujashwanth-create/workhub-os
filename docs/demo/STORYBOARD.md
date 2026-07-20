@@ -13,6 +13,6 @@
 | 3:35–4:00 | Status and comment | Review transition and safe update persisted |
 | 4:00–4:30 | Explicit stop | Session collection ended before logout |
 | 4:30–5:05 | Manager verification | Review state and employee comment visible to admin |
-| 5:05–5:55 | Honest close | Verification evidence and external human gates |
+| 5:05–5:43 | Honest close | Verification evidence and external human gates |
 
 Capture at 1280×720. Leave pauses after meaningful state changes, keep pointer motion deliberate, and inspect all twelve extracted milestone frames.

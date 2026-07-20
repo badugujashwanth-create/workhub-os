@@ -2,11 +2,11 @@
 
 > **Status: tested workplace-operations prototype.** The verified core is the role/project/task workflow with a deterministic in-memory MongoDB demo. Calls, external AI, production monitoring, and hosted credentials remain environment-dependent.
 
-[![Watch the WorkHub OS demo](docs/demo/demo-thumbnail.png)](docs/demo/demo.webm)
+[![Watch the verified WorkHub OS walkthrough](docs/demo/demo-thumbnail.png)](docs/demo/demo.webm)
 
-The current short overview is being replaced by a full recruiter walkthrough. All demo accounts and records are synthetic.
+The 5:42 narrated Chromium walkthrough runs the complete synthetic workflow: administrator assignment, employee consent, task review/comment, explicit session stop, and manager verification. [Captions](docs/demo/demo-captions.vtt), [verification metadata](docs/demo/verification/verification.json), and [frame inspection](docs/demo/verification/INSPECTION.md) are included.
 
-[Architecture](docs/ARCHITECTURE.md) · [Test evidence](docs/TEST_REPORT.md) · [Client guide](docs/CLIENT_GUIDE.md) · [Interview guide](docs/INTERVIEW_GUIDE.md)
+[Architecture](docs/ARCHITECTURE.md) · [Test evidence](docs/TEST_REPORT.md) · [UX audit](docs/UX_AUDIT.md) · [Interview guide](docs/INTERVIEW_GUIDE.md)
 
 WorkHub combines role-based projects, tasks, work sessions, attendance, collaboration, calls, reporting, and administration in two applications:
 
@@ -56,6 +56,8 @@ node scripts/check-markdown-links.mjs
 
 The backend suite contains five CORS tests and two MongoDB-backed authenticated workflow tests. See [the current test report](docs/TEST_REPORT.md).
 
+The browser evidence includes a fast 14-milestone desktop workflow and a 390×844 responsive audit covering navigation, keyboard focus, and reduced motion.
+
 ## Honest boundaries
 
 - The default demo database and accounts are synthetic and reset on restart.
@@ -69,6 +71,8 @@ The backend suite contains five CORS tests and two MongoDB-backed authenticated 
 - [Architecture](docs/ARCHITECTURE.md)
 - [Development](docs/DEVELOPMENT.md)
 - [Project report](docs/PROJECT_REPORT.md)
+- [v1.1.0 release notes](docs/RELEASE_NOTES_v1.1.0.md)
+- [UX and accessibility audit](docs/UX_AUDIT.md)
 - [Troubleshooting](docs/TROUBLESHOOTING.md)
 - [Security policy](SECURITY.md)
 - [Deployment boundary](DEPLOYMENT.md)

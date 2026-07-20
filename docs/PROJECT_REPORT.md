@@ -30,6 +30,9 @@ Attendance, logs, reports, team collaboration, announcements, documents, notific
 - Frontend lint and the 37-route production build pass.
 - Backend and frontend dependency audits report zero known vulnerabilities.
 - The local demo uses an ephemeral database and deterministic verification script.
+- The fourteen-step Chromium workflow covers both roles, consent, status/comment persistence, and manager verification.
+- The narrated walkthrough is 342.728 seconds at 1280×720 with VP9/Opus, captions, checksum evidence, and twelve inspected frames.
+- The 390×844 audit verifies a responsive drawer, no horizontal overflow, keyboard focus, and reduced motion.
 
 ## Known risks
 

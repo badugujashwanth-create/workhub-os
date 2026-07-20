@@ -9,7 +9,11 @@ Audited on 2026-07-20 from `product-completion-v1.1` on Windows.
 | `frontend: npm run lint` | Pass | ESLint completed without errors |
 | `frontend: npm run build` | Pass | Next.js production build completed and generated 37 routes |
 | `frontend: npm audit --audit-level=low` | Pass | Zero known vulnerabilities in the complete dependency tree |
-| Deterministic demo verifier | Implemented | Reuses synthetic project/task state against a healthy local API |
+| Deterministic demo verifier | Pass | Verifies explicit start/stop cleanup plus task persistence against a healthy local API |
+| Chromium workflow smoke | Pass | Fourteen milestones across admin and employee roles |
+| Responsive/accessibility audit | Pass | 390×844 viewport, zero horizontal overflow, operable drawer/Escape close, visible focus, reduced motion |
+| Narrated walkthrough | Pass | 342.728 seconds, 1280×720, VP9 video, Opus audio, captions, SHA-256, twelve inspected frames |
+| Current-tree secret scan | Pass | Zero findings across the tracked `HEAD` archive |
 | WebRTC/provider workflow | Not claimed | Requires browser permissions, TURN/provider configuration, and separate evidence |
 
 ## Verified security behavior
@@ -23,4 +27,4 @@ Audited on 2026-07-20 from `product-completion-v1.1` on Windows.
 
 ## Overall status
 
-The bounded role/project/task workflow is verified against an ephemeral MongoDB instance. This evidence does not prove production hosting, real-time media reliability, external AI behavior, or account-owner credential rotation.
+The bounded role/project/task/work-session workflow is verified through the API, production frontend, and Chromium. This evidence does not prove production hosting, real-time media reliability, external AI behavior, or account-owner credential rotation.

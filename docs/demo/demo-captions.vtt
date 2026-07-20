@@ -33,8 +33,8 @@ The employee explicitly stops Work Mode before signing out.
 00:04:25.000 --> 00:04:55.000
 The administrator sees the persisted review state and employee comment.
 
-00:04:55.000 --> 00:05:35.000
+00:04:55.000 --> 00:05:25.000
 Tests, builds, audits, and scans support a local prototype claim—not production readiness.
 
-00:05:35.000 --> 00:05:55.000
+00:05:25.000 --> 00:05:42.500
 External providers, production operations, privacy approval, and credential rotation remain explicit gates.
