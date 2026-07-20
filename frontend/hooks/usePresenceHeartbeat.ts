@@ -4,12 +4,12 @@ import { useEffect, useRef } from 'react';
 import { presenceService } from '@/services/presenceService';
 import { useAuthStore } from '@/store/useAuthStore';
 
-export const usePresenceHeartbeat = () => {
+export const usePresenceHeartbeat = (enabled = true) => {
   const { user, ready } = useAuthStore();
   const lastActiveRef = useRef<number>(0);
 
   useEffect(() => {
-    if (!ready || !user) return undefined;
+    if (!ready || !user || !enabled) return undefined;
     let stopped = false;
 
     const markActive = () => {
@@ -54,5 +54,5 @@ export const usePresenceHeartbeat = () => {
       window.removeEventListener('visibilitychange', handleVisibility);
       window.removeEventListener('beforeunload', goOffline);
     };
-  }, [ready, user]);
+  }, [enabled, ready, user]);
 };

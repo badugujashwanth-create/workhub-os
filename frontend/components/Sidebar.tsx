@@ -30,7 +30,11 @@ import { teamService } from '@/services/teamService';
 import { useAuthStore } from '@/store/useAuthStore';
 import type { IChannel, ITeamMembership } from '@/types';
 
-type Props = { role: 'admin' | 'employee' };
+type Props = {
+  role: 'admin' | 'employee';
+  className?: string;
+  onNavigate?: () => void;
+};
 type NavLink = { href: Route; label: string; icon: LucideIcon };
 type NavSection = { title: string; links: NavLink[] };
 
@@ -113,7 +117,7 @@ const adminSections: NavSection[] = [
   }
 ];
 
-export default function Sidebar({ role }: Props) {
+export default function Sidebar({ role, className, onNavigate }: Props) {
   const pathname = usePathname();
   const sections = role === 'admin' ? adminSections : employeeSections;
   const { user, ready } = useAuthStore();
@@ -161,7 +165,12 @@ export default function Sidebar({ role }: Props) {
   }, [role, ready, user]);
 
   return (
-    <aside className="relative w-72 shrink-0 border-r border-slate-200 bg-white/90 px-4 py-6 shadow-xl backdrop-blur">
+    <aside
+      className={clsx(
+        'relative w-72 shrink-0 overflow-y-auto border-r border-slate-200 bg-white/90 px-4 py-6 shadow-xl backdrop-blur',
+        className
+      )}
+    >
       <div className="absolute inset-x-8 top-16 h-32 rounded-2xl bg-gradient-to-br from-brand-600/10 via-indigo-500/10 to-slate-900/10 blur-3xl" />
       <div className="relative flex items-center justify-between rounded-2xl bg-slate-50/80 px-4 py-3 shadow-sm">
         <div>
@@ -194,6 +203,7 @@ export default function Sidebar({ role }: Props) {
                         ? 'border-brand-200 bg-brand-50 text-brand-700 shadow-sm'
                         : 'border-slate-200 bg-white text-slate-600'
                     )}
+                    onClick={onNavigate}
                   >
                     <span className="flex items-center gap-3">
                       <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-base shadow-inner transition group-hover:scale-105 group-hover:bg-brand-100">

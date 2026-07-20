@@ -24,7 +24,7 @@ export const startWork = async (req, res) => {
 
 export const stopWork = async (req, res) => {
   const session = await stopSession(req.user._id, req.user._id);
-  if (!session) return res.status(404).json({ message: 'No active session' });
+  if (!session) return res.json(null);
   await requestPresenceUpdate(req.user._id);
   res.json(session);
 };

@@ -1,9 +1,10 @@
 import TaskDetailsPage from '@/components/TaskDetailsPage';
 
 type Props = {
-  params: { taskId: string };
+  params: Promise<{ taskId: string }>;
 };
 
-export default function EmployeeTaskDetailsPage({ params }: Props) {
-  return <TaskDetailsPage taskId={params.taskId} />;
+export default async function EmployeeTaskDetailsPage({ params }: Props) {
+  const { taskId } = await params;
+  return <TaskDetailsPage taskId={taskId} />;
 }

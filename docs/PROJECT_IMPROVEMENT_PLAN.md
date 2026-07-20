@@ -1,35 +1,25 @@
-# Project Improvement Plan
+# Project improvement plan
 
 ## Current state
 
-WorkHub has a substantial role/work/task/collaboration API surface and a polished frontend, but baseline CI did not execute backend behavior and local startup requires MongoDB.
+The core role/project/task workflow now runs against an ephemeral MongoDB database in tests and in the deterministic local demo. CORS and dependency boundaries are also verified.
 
-## Findings
+## Completed P0 work
 
-- **Works:** frontend lint/build, health endpoints, route separation, role models, Socket.IO path, CORS allowlist logic, and seeded development concepts.
-- **Does not / missing:** broad authorization/IDOR verification, deterministic one-command demo, backend workflow tests, and evidence that every dashboard surface is fully connected.
-- **UX / architecture:** breadth creates a risk of shallow features. The role/work/task path should remain the demonstrated core.
-- **Testing / security:** baseline backend CI only installed packages. CORS, authentication, and resource authorization are the highest-risk boundaries.
-- **Performance / docs / demo:** query and socket scaling are unmeasured. MongoDB setup is the main reproducibility blocker.
+- Upgraded backend and frontend dependency trees to zero known audit findings.
+- Added object-level project/task authorization and employee update allowlists.
+- Added MongoDB-backed login, happy-path, IDOR, and manager-scope regression tests.
+- Made local frontend defaults explicit and loopback-only.
+- Added a one-command in-memory startup path and deterministic workflow verifier.
+- Recorded and inspected a 5:42 narrated Chromium walkthrough with captions and checksum evidence.
+- Removed mobile horizontal overflow with a responsive navigation drawer and mobile-first login order.
+- Added browser evidence for keyboard focus, reduced motion, and the 390×844 responsive state.
 
-## Recommendations
+## Remaining human or external gates
 
-### Critical
+- Rotate the previously exposed provider credential and reusable JWT outside the repository, then review deployment logs.
+- Add real-time call tests only when an owned TURN/media test environment is authorized.
 
-- Add meaningful security-boundary tests to backend CI, beginning with origin normalization, preview scoping, suffix spoofing, and local/server requests.
-- Keep production origins explicit and fail closed.
+## Excluded expansion
 
-### High value
-
-- Add an authenticated workspace/project/task integration path using an ephemeral database.
-- Document and verify a bounded seeded demo workflow.
-
-### Optional
-
-- Add workload analytics only after core authorization tests are complete.
-
-## Delivery constraints
-
-- **Priority:** backend verification; **complexity:** medium; **dependencies:** Node, MongoDB or `mongodb-memory-server` for later integration tests.
-- **Acceptance:** frontend lint/build and backend tests pass in CI; spoofed origins fail; startup errors explain missing database configuration.
-- **Excluded:** cloning full enterprise project-management suites and expanding unverified dashboard breadth.
+Do not clone a broad enterprise project-management suite or imply every dashboard surface is production-integrated. The role/project/task/work-session path remains the public proof workflow.

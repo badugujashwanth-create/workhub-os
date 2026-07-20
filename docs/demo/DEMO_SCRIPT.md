@@ -1,16 +1,30 @@
 # WorkHub OS demo script
 
-**Target length:** 60–90 seconds  
-**Format:** Browser  
-**Data:** synthetic, repository-provided demo data, or public non-personal examples only
+**Target length:** 5–6 minutes
+
+**Format:** Real Chromium product simulation with generated narration and captions
+
+**Data:** Synthetic in-memory records only
 
 ## Walkthrough
 
-1. **Title (0–5s):** Show “WorkHub OS” and its one-sentence problem statement.
-2. **Starting state (5–15s):** Show the clean entry point and identify the intended user.
-3. **Primary workflow (15–55s):** Open the role-based interface; show dashboard, tasks, work permission, collaboration, and reporting surfaces with synthetic data; explain MongoDB and backend requirements.
-4. **Architecture (55–75s):** Show the architecture guide and name the main runtime boundaries.
-5. **Close (75–90s):** Display the project name, badugujashwanth-create, current status, and one honest limitation.
+1. **Boundary and admin entry:** State the synthetic-data and non-production boundary, then use the seeded admin account.
+2. **Manager evidence:** Inspect the dashboard, task register, and deterministic launch-readiness task assigned to Eli.
+3. **Employee entry:** Sign out, use the seeded employee account, and show that login did not start a work session.
+4. **Explicit consent:** Open Work Mode, read the collection boundary, and deliberately start the session.
+5. **Employee execution:** Open the assigned task board, move the deterministic task to review, and add a safe progress comment.
+6. **Explicit stop:** Return to Work Mode and stop the session before signing out.
+7. **Manager verification:** Sign in as admin again and verify the same persisted review status and employee comment.
+8. **Proof and limitations:** Narrate the test, build, audit, secret-scan, provider, deployment, and credential-rotation boundaries.
 
-Do not show environment files, tokens, browser bookmarks, notifications, real user accounts, or private URLs. Do not edit the footage to imply an integration succeeded when it did not.
+Never show environment files, tokens, unrelated applications, notifications, bookmarks, personal accounts, or private URLs. Do not edit footage to imply an external integration succeeded.
 
+## Record
+
+After the repository checks pass and Chromium use is authorized:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\record-demo.ps1
+```
+
+The script starts a clean in-memory demo, verifies the API workflow, records the browser simulation, adds narration, extracts inspection frames, validates duration/resolution/audio, and writes the SHA-256 checksum.

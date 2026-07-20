@@ -1,0 +1,29 @@
+{
+    "generated_at_utc":  "2026-07-20T15:37:16.6009673Z",
+    "duration_seconds":  342.728,
+    "width":  1280,
+    "height":  720,
+    "video_codec":  "vp9",
+    "audio_codec":  "opus",
+    "browser":  "Chromium",
+    "data_boundary":  "Synthetic in-memory seed",
+    "workflow":  "Admin assignment -\u003e employee consent -\u003e status/comment -\u003e manager verification",
+    "captions":  "demo-captions.vtt",
+    "sha256":  "86cb4c006905ccf674e931fc76c31f0f13f3d57638ba733bd57043b8793ae1fe",
+    "bytes":  10648238,
+    "verification_frames":  12,
+    "frame_timestamps":  [
+                             "00:00:10",
+                             "00:00:35",
+                             "00:01:00",
+                             "00:01:30",
+                             "00:02:00",
+                             "00:02:30",
+                             "00:03:00",
+                             "00:03:30",
+                             "00:04:00",
+                             "00:04:30",
+                             "00:05:00",
+                             "00:05:25"
+                         ]
+}

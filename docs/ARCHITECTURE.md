@@ -23,7 +23,7 @@ flowchart LR
 
 ## Runtime and trust boundaries
 
-Backend validation requires a MongoDB instance and environment configuration; dependency installation warns that Multer 1.x should be upgraded. Inputs crossing a network, filesystem, provider, or database boundary should be validated and logged without sensitive values. Optional integrations must fail clearly rather than being presented as successful.
+Backend validation uses either an explicitly configured MongoDB deployment or an ephemeral local instance. Inputs crossing a network, filesystem, provider, or database boundary must be validated and logged without sensitive values. Optional integrations fail clearly instead of being presented as successful.
 
 ## Technology
 

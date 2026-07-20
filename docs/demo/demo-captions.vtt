@@ -1,16 +1,40 @@
 WEBVTT
 
-00:00.000 --> 00:05.000
-WorkHub OS
+00:00:00.000 --> 00:00:24.000
+WorkHub OS is shown with synthetic, resettable data. No real employee or production environment appears.
 
-00:05.000 --> 00:15.000
-The problem, intended user, and starting point.
+00:00:24.000 --> 00:00:49.000
+The seeded admin path opens the role-scoped operations dashboard.
 
-00:15.000 --> 00:39.000
-A walkthrough of the primary workflow using safe demonstration data.
+00:00:49.000 --> 00:01:14.000
+The task register is the manager-side source of truth for assignments.
 
-00:39.000 --> 00:50.000
-Architecture, technology boundaries, and verified behavior.
+00:01:14.000 --> 00:01:38.000
+The launch-readiness record exposes its assignee, assigner, priority, due date, and discussion.
 
-00:50.000 --> 00:59.400
-Current status, known limitation, and repository owner badugujashwanth-create.
+00:01:38.000 --> 00:02:02.000
+The employee dashboard confirms that login did not start activity collection.
+
+00:02:02.000 --> 00:02:32.000
+Work Mode explains the explicit, reversible session boundary before consent is given.
+
+00:02:32.000 --> 00:03:02.000
+Starting a session enables session-scoped activity. Calls request media separately and just in time.
+
+00:03:02.000 --> 00:03:30.000
+The employee sees the same manager-owned assignment and moves it into review.
+
+00:03:30.000 --> 00:03:58.000
+A safe progress update is persisted in the shared task discussion.
+
+00:03:58.000 --> 00:04:25.000
+The employee explicitly stops Work Mode before signing out.
+
+00:04:25.000 --> 00:04:55.000
+The administrator sees the persisted review state and employee comment.
+
+00:04:55.000 --> 00:05:25.000
+Tests, builds, audits, and scans support a local prototype claim—not production readiness.
+
+00:05:25.000 --> 00:05:42.500
+External providers, production operations, privacy approval, and credential rotation remain explicit gates.

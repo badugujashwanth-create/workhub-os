@@ -2,18 +2,24 @@
 
 ## Supported status
 
-WorkHub OS is maintained as a portfolio project and Backend validation requires a MongoDB instance and environment configuration; dependency installation warns that Multer 1.x should be upgraded.
+WorkHub OS is maintained as a portfolio prototype. The authenticated project/task workflow and current dependency trees are tested; this is not a production-support or complete-security claim.
 
 ## Reporting a vulnerability
 
-Use GitHub's private vulnerability reporting feature when it is enabled. Otherwise, contact the repository owner through an existing verified GitHub contact channel. Do not include secrets, access tokens, private URLs, or personal data in a public issue.
+Use GitHub private vulnerability reporting when available. Otherwise contact the owner through a verified GitHub channel. Never include secrets, access tokens, private URLs, employee data, or exploit details in a public issue.
 
-## Configuration rules
+## Verified controls
 
-- Keep real credentials in local environment files or an external secret manager.
-- Commit only placeholder values in `.env.example` files.
-- Rotate any credential that was previously committed; deleting it from the current branch does not remove Git history.
-- Use synthetic or public sample data for tests, screenshots, and recordings.
+- Explicit CORS origins with preview-site scoping and spoof rejection.
+- Disabled public registration/bootstrap administration by default.
+- Hashed rotating refresh tokens and account-disable checks.
+- Project ownership/manager/member authorization and task update allowlists.
+- Rate limiting, Helmet, dependency audits, and MongoDB-backed regression tests.
 
-No response-time or production support commitment is implied.
+## Open boundaries
 
+- Browser token storage requires a stricter production session/XSS design.
+- Uploads, WebRTC/TURN, production database access, and provider integrations require deployment-specific review.
+- Historical provider/JWT findings require account-owner rotation, revocation, session invalidation, and log review.
+
+Commit only placeholder examples and use synthetic data for tests, screenshots, and recordings. No response-time or production support commitment is implied.

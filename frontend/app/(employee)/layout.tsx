@@ -1,12 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
 import { useSocket } from '@/hooks/useSocket';
 import { usePresenceHeartbeat } from '@/hooks/usePresenceHeartbeat';
-import { useWorkTimer } from '@/hooks/useWorkTimer';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useWorkStore } from '@/store/useWorkStore';
 
@@ -15,16 +14,25 @@ const EMPLOYEE_ROLES = new Set(['employee', 'manager', 'hr', 'auditor']);
 export default function EmployeeLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { user, ready, hydrate } = useAuthStore();
-  const { refresh } = useWorkStore();
+  const { refresh, session } = useWorkStore();
   const socketUserId = ready && user ? user._id : undefined;
+  const [navigationOpen, setNavigationOpen] = useState(false);
 
   useSocket(socketUserId);
-  usePresenceHeartbeat();
-  useWorkTimer();
+  usePresenceHeartbeat(Boolean(session));
 
   useEffect(() => {
     hydrate();
   }, [hydrate]);
+
+  useEffect(() => {
+    if (!navigationOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setNavigationOpen(false);
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [navigationOpen]);
 
   useEffect(() => {
     if (!ready) return;
@@ -43,11 +51,29 @@ export default function EmployeeLayout({ children }: { children: React.ReactNode
     return <div className="flex min-h-screen items-center justify-center">Loading...</div>;
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
-      <Sidebar role="employee" />
-      <div className="flex flex-1 flex-col">
-        <TopBar />
-        <main className="flex-1 space-y-6 p-6">{children}</main>
+    <div className="flex min-h-screen min-w-0 overflow-x-hidden bg-slate-50">
+      <Sidebar role="employee" className="hidden lg:block" />
+      {navigationOpen && (
+        <div id="mobile-navigation" className="fixed inset-0 z-40 lg:hidden">
+          <button
+            type="button"
+            aria-label="Close navigation"
+            className="absolute inset-0 bg-slate-950/45 backdrop-blur-sm"
+            onClick={() => setNavigationOpen(false)}
+          />
+          <Sidebar
+            role="employee"
+            className="relative z-10 h-full"
+            onNavigate={() => setNavigationOpen(false)}
+          />
+        </div>
+      )}
+      <div className="flex min-w-0 flex-1 flex-col">
+        <TopBar
+          menuOpen={navigationOpen}
+          onMenuClick={() => setNavigationOpen((open) => !open)}
+        />
+        <main className="min-w-0 flex-1 space-y-6 p-4 sm:p-6">{children}</main>
       </div>
     </div>
   );

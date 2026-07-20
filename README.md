@@ -1,78 +1,80 @@
-# WorkHub - IT Workshop Management System
+# WorkHub OS
 
-> **Status: Active Development** — The frontend now passes lint and a Next.js production build; the MongoDB-backed API still needs an automated test suite.
+> **Status: tested workplace-operations prototype.** The verified core is the role/project/task workflow with a deterministic in-memory MongoDB demo. Calls, external AI, production monitoring, and hosted credentials remain environment-dependent.
 
-[![Watch the WorkHub OS demo](docs/demo/demo-thumbnail.png)](docs/demo/demo.webm)
+[![Watch the verified WorkHub OS walkthrough](docs/demo/demo-thumbnail.png)](docs/demo/demo.webm)
 
-> Watch the locally recorded role-based entry point and architecture overview; no real employee account or data is used.
+The 5:42 narrated Chromium walkthrough runs the complete synthetic workflow: administrator assignment, employee consent, task review/comment, explicit session stop, and manager verification. [Captions](docs/demo/demo-captions.vtt), [verification metadata](docs/demo/verification/verification.json), and [frame inspection](docs/demo/verification/INSPECTION.md) are included.
 
-[Architecture](docs/ARCHITECTURE.md) · [Test evidence](docs/TEST_REPORT.md) · [Interview guide](docs/INTERVIEW_GUIDE.md)
+[Architecture](docs/ARCHITECTURE.md) · [Test evidence](docs/TEST_REPORT.md) · [UX audit](docs/UX_AUDIT.md) · [Interview guide](docs/INTERVIEW_GUIDE.md)
 
-WorkHub is a role-based workplace operations prototype covering tasks, attendance, permissions, collaboration, calls, reporting, and administration. The project contains two apps:
+WorkHub combines role-based projects, tasks, work sessions, attendance, collaboration, calls, reporting, and administration in two applications:
 
-- **Backend** - Express + MongoDB API (`/backend`)
-- **Frontend** - Next.js 16 dashboard (`/frontend`)
+- **Backend:** Express, MongoDB/Mongoose, Socket.IO, JWT access and rotating refresh tokens.
+- **Frontend:** Next.js 16, React 18, Tailwind CSS, Zustand, and Axios.
 
-## Getting Started
+## Verified workflow
+
+An administrator or project manager creates a bounded project and assigns a project member. The employee sees only assigned work, updates task status, and starts a work session. The manager verifies the same persisted state. Database-backed integration tests reject cross-project reads, foreign-manager updates, and employee reassignment attempts.
+
+## Quick start
+
+Requires Node.js 22 and PowerShell on Windows.
+
+```powershell
+npm ci --prefix backend
+npm ci --prefix frontend
+powershell -ExecutionPolicy Bypass -File scripts/run-demo.ps1
+```
+
+The script starts both applications with an ephemeral database, seeds fictional users, waits for both health checks, and runs the deterministic workflow verifier. It does not open a browser or call an external provider.
+
+For manual development, run `npm run dev` in `backend` and `frontend`. Local frontend defaults point to `http://127.0.0.1:5000`; hosted environments must configure their API and Socket.IO URLs explicitly.
+
+## Configuration
+
+Copy the example files and replace placeholders locally. Important backend values include `MONGO_URI`, `JWT_SECRET`, `CLIENT_URL`, access/refresh-token lifetimes, and optional `OPENAI_API_KEY`. Public registration and bootstrap-admin behavior are disabled unless explicitly enabled.
+
+WebRTC calls require deployment-specific TURN settings:
+
+```dotenv
+NEXT_PUBLIC_TURN_URL=turn:turn.example.com:3478
+NEXT_PUBLIC_TURN_USER=<turn-user>
+NEXT_PUBLIC_TURN_PASS=<turn-password>
+```
+
+## Verification
 
 ```bash
-# install dependencies
-cd backend && npm install
-cd ../frontend && npm install
-
-# run dev servers
-cd ../backend && npm run dev
-cd ../frontend && npm run dev
+npm test --prefix backend
+npm run lint --prefix frontend
+npm run build --prefix frontend
+npm audit --prefix backend
+npm audit --prefix frontend
+node scripts/check-markdown-links.mjs
 ```
 
-Set the following environment variables (see `/backend/.env.example` and `/frontend/.env.local`):
+The backend suite contains five CORS tests and two MongoDB-backed authenticated workflow tests. See [the current test report](docs/TEST_REPORT.md).
 
-- `PORT`, `MONGO_URI`, `JWT_SECRET`, `CLIENT_URL`
-- `ACCESS_TOKEN_TTL`, `REFRESH_TOKEN_DAYS`
-- `OPENAI_API_KEY` (optional for AI summaries)
+The browser evidence includes a fast 14-milestone desktop workflow and a 390×844 responsive audit covering navigation, keyboard focus, and reduced motion.
 
-Frontend reads `NEXT_PUBLIC_API_URL` from `.env.local` to reach the API; it defaults to `https://zettalogix-workos.onrender.com/api` if you leave it unset.
+## Honest boundaries
 
-Auth notes:
-- For a fresh database, set `ALLOW_BOOTSTRAP_ADMIN=true` to allow the first registration to be an admin, then disable it.
+- The default demo database and accounts are synthetic and reset on restart.
+- Tokens currently live in browser storage; production use needs a stricter session and XSS threat model.
+- WebRTC requires user permission and deployment-specific TURN/STUN configuration.
+- Provider-backed summaries require an explicitly configured key and are not part of the deterministic demo.
+- A previously exposed provider credential and reusable JWT must be rotated, revoked, and followed by deployment-log review before a complete production-security claim.
 
-### TURN for calls
+## Documentation
 
-To enable TURN for WebRTC calls, set the following in `frontend/.env.local` (or host env vars). If unset, calls fall back to STUN only.
+- [Architecture](docs/ARCHITECTURE.md)
+- [Development](docs/DEVELOPMENT.md)
+- [Project report](docs/PROJECT_REPORT.md)
+- [v1.1.0 release notes](docs/RELEASE_NOTES_v1.1.0.md)
+- [UX and accessibility audit](docs/UX_AUDIT.md)
+- [Troubleshooting](docs/TROUBLESHOOTING.md)
+- [Security policy](SECURITY.md)
+- [Deployment boundary](DEPLOYMENT.md)
 
-```
-NEXT_PUBLIC_TURN_URL=turn:turn.example.com:3478
-NEXT_PUBLIC_TURN_USER=your-turn-username
-NEXT_PUBLIC_TURN_PASS=your-turn-password
-```
-
-## How to run locally
-
-1. Start the API: `cd backend && npm install && npm run dev` (uses `PORT` from `.env`, defaults to `5000`).
-2. Start the frontend: `cd frontend && npm install && npm run dev` (use `npm run dev`, not `npm start`).
-3. (Optional) Set `NEXT_PUBLIC_API_URL` in `frontend/.env.local` to point at your API; leave it empty to use `https://zettalogix-workos.onrender.com/api`.
-
-## Client Guide
-
-For a client-ready overview and role-based walkthrough, see `docs/CLIENT_GUIDE.md`.
-
-## Backend Highlights
-
-- **Auth & RBAC** - Access/refresh tokens, refresh rotation, and role guard middleware (`admin`, `manager`, `employee`, `hr`).
-- **Models** - Users, Roles, Attendance, Projects, Tasks (attachments & history), WorkSessions, AuditLog, RefreshToken, etc.
-- **Modules** - Attendance APIs (check-in/out, break tracking, overrides), Project management, enhanced Admin analytics (`/api/admin/dashboard`), audit logging, rate limiting.
-- **Seed data** - In-memory Mongo seeds now include multiple roles, projects, attendance history, and activity logs.
-
-## Frontend Highlights
-
-- **Admin dashboard** - Live metrics, task status board, focus trend chart, attendance rollup, alert stream, and audit feed.
-- **Employee dashboard** - Task board plus attendance timeline & work-mode metrics.
-- **Services/Stores** - Auto token refresh via Axios interceptors, Zustand auth store aware of refresh tokens, new attendance/project services.
-
-## Testing
-
-1. `npm run dev` in `/backend` launches the API on port 5000.
-2. `npm run dev` in `/frontend` launches Next.js on port 3000 (configured to talk to the API).
-3. Demo logins (seeded): `admin@workos.dev`, `manager@workos.dev`, `hr@workos.dev`, `eli@workos.dev`, `nia@workos.dev` (see terminal output after `seedTempData` runs).
-
-Backfill tasks, attendance overrides, and exports are exposed in the Admin console once logged in as an administrator.
+No real employee monitoring, production organization, or external provider success is claimed.

@@ -251,6 +251,11 @@ export default function WorkModePanel() {
           {session && (
             <p className="text-sm text-slate-600">Started at {new Date(session.startTime).toLocaleTimeString()}</p>
           )}
+          {!session && (
+            <p className="max-w-2xl text-sm text-slate-600">
+              Starting is explicit. While the session is live, WorkHub records session activity and idle events; Stop session ends that collection. Calls request microphone or camera access separately.
+            </p>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <button

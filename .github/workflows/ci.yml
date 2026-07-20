@@ -24,6 +24,7 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build
+      - run: node ../scripts/check-markdown-links.mjs
 
   backend:
     runs-on: ubuntu-latest

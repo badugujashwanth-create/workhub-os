@@ -1,41 +1,25 @@
 # WorkHub OS interview guide
 
-## Tell me about this project.
+## What is it?
 
-WorkHub OS is a role-based workplace operations application covering tasks, attendance, permissions, collaboration, calls, and reporting through a Next.js frontend and Express/MongoDB backend.
+WorkHub OS is a role-based workplace-operations prototype that connects projects, tasks, work sessions, attendance, collaboration, calls, and reporting through a Next.js frontend and Express/MongoDB backend.
 
-## Why did you build it?
+## What is the strongest workflow?
 
-The goal was to explore how connected team workflows can share identity, permissions, and real-time state instead of living in separate tools.
+A manager works inside an owned or managed project, assigns a project member, and follows the same task state that the employee updates. The integration suite proves both the happy path and cross-project denial.
 
-## What was your contribution?
+## What was the hardest problem?
 
-Discuss the frontend workflows, backend service boundary, permissions/type/lifecycle corrections, CI, documentation, and demo. Do not claim the MongoDB-backed production path was verified in the final audit.
+The broad API originally relied heavily on role checks and automatic activity startup. The stronger boundary combines project relationships, task allowlists, explicit session start, and regression tests against a real ephemeral database.
 
-## What was the hardest technical problem?
+## What evidence exists?
 
-Coordinating role-based UI behavior with real-time chat/call and backend state while keeping browser permissions and asynchronous initialization predictable.
+Seven backend tests cover CORS plus authenticated project/task behavior using `mongodb-memory-server`. Frontend lint, a 37-route production build, and both dependency audits pass.
 
-## How does the architecture work?
+## What is not proven?
 
-Next.js provides role-oriented application routes; Express owns API and Socket.IO behavior; MongoDB stores operational state; browser WebRTC uses configured signaling and TURN/STUN boundaries.
+Do not claim production employee monitoring, WebRTC reliability, provider-backed AI behavior, external user adoption, or completed credential rotation. Tokens are currently stored in browser storage and need a stricter production threat model.
 
-## What would you improve?
+## What would come next?
 
-Add backend tests, a disposable MongoDB integration environment, contract tests, stronger authentication/session review, and end-to-end real-time tests.
-
-## How did you test it?
-
-The verified frontend lint and production build pass in CI. Backend dependencies install, but no automated backend test script exists and startup needs configured MongoDB.
-
-## What are its security limitations?
-
-Synthetic accounts must not be reused publicly. Authentication, authorization, CORS, MongoDB access, uploads, calls, and environment secrets require deployment hardening.
-
-## How would you scale it?
-
-Separate stateless API and Socket.IO scaling, use shared session/pub-sub infrastructure, index operational queries, store uploads externally, and isolate reporting workloads.
-
-## What did you learn?
-
-Large workflow products need explicit domain and permission boundaries; frontend polish cannot substitute for backend integration tests.
+Move sessions to a stricter browser boundary, expand contract and real-time tests, measure query/socket behavior under load, and complete account-owner credential rotation and log review.

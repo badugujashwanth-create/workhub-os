@@ -1,47 +1,42 @@
-# WorkHub Project Report
-Generated: 2026-01-11
+# WorkHub OS project report
 
-## Summary
-WorkHub is a role-based IT workshop and employee management OS that combines attendance, task tracking, communication, and analytics into a single dashboard experience.
+Updated: 2026-07-20
+
+## Product thesis
+
+WorkHub explores how small teams can connect role-aware project assignment, employee task execution, work sessions, attendance, and operational reporting without hiding authorization boundaries.
 
 ## Stack
-- Frontend: Next.js 16, React 18, Tailwind CSS, Zustand, Axios, socket.io-client
-- Backend: Express, MongoDB (or MongoMemoryServer), Socket.IO, JWT auth, Multer, PDFKit
-- Realtime: Socket.IO for presence and WebRTC signaling
 
-## Core Features
-- Auth and RBAC: admin, manager, hr, employee, auditor roles
-- Work mode: start/stop sessions, active page tracking, idle time recording
-- Tasks and projects: assignment, status updates, comments, attachments
-- Attendance and logs: daily logs, summaries, reports (daily/weekly/team)
-- Calls and chat: WebRTC signaling, call logs, call-side chat, direct messages
-- Collaboration: strategy room messages, file handoffs, announcements
-- Settings and alerts: idle thresholds, presence monitoring, alerts
+- Frontend: Next.js 16, React 18, Tailwind CSS, Zustand, Axios, Socket.IO client.
+- Backend: Express 4, Mongoose 8, Socket.IO, JWT, Multer 2, PDFKit.
+- Local evidence: `mongodb-memory-server` with fictional users/projects/tasks.
 
-## Local Run
-1. Backend: `cd backend && npm install && npm run dev` (defaults to port 5000)
-2. Frontend: `cd frontend && npm install && npm run dev` (defaults to port 3000)
-3. Backend uses in-memory MongoDB if `MONGO_URI` is unset or `memory`
-4. Frontend reads `NEXT_PUBLIC_API_URL` from `.env.local` (defaults to `https://zettalogix-workos.onrender.com/api`)
+## Verified core
 
-## Demo Accounts (seeded)
-- admin@workos.dev / Admin@123
-- manager@workos.dev / Manager@123
-- hr@workos.dev / Hr@123456
-- auditor@workos.dev / Auditor@123
-- eli@workos.dev / Employee@123
-- nia@workos.dev / Employee@456
+- Authentication and rotating refresh-token persistence.
+- Project ownership, manager/member visibility, and task assignment.
+- Employee status updates with restricted mutable fields.
+- Cross-project and foreign-manager denial.
+- Explicit employee work-session start and manager-side task verification.
 
-## Recent Fixes
-- WebRTC permission prompt now triggers on user action before dialing/accepting.
-- Outgoing call cancel works during ringing/outgoing state.
-- Admin dashboard stops repeating 403 calls and shows an access warning when not authorized.
+## Supporting surfaces
 
-## Known Gaps / Risks
-- No automated backend or e2e tests are defined; lint only.
-- WebRTC requires mic/camera permission and may be blocked by browser settings.
-- TURN credentials are needed for restricted networks.
-- Tokens are stored in localStorage, which increases XSS risk.
+Attendance, logs, reports, team collaboration, announcements, documents, notifications, browser/work mode, and call signaling exist in the codebase. They are supporting prototype surfaces, not equal proof of production readiness.
 
-## Testing
-- Frontend lint: `npm run lint` (pass)
+## Evidence
+
+- Seven backend tests pass.
+- Frontend lint and the 37-route production build pass.
+- Backend and frontend dependency audits report zero known vulnerabilities.
+- The local demo uses an ephemeral database and deterministic verification script.
+- The fourteen-step Chromium workflow covers both roles, consent, status/comment persistence, and manager verification.
+- The narrated walkthrough is 342.728 seconds at 1280×720 with VP9/Opus, captions, checksum evidence, and twelve inspected frames.
+- The 390×844 audit verifies a responsive drawer, no horizontal overflow, keyboard focus, and reduced motion.
+
+## Known risks
+
+- Browser tokens require a stronger production session/XSS design.
+- WebRTC depends on user permission and environment-specific TURN services.
+- External AI is optional and excluded from the deterministic demo.
+- Previously exposed provider/JWT material requires account-owner rotation and log review.

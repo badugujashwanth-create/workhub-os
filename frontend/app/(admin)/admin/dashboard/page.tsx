@@ -5,14 +5,12 @@ import clsx from 'clsx';
 import AlertList from '@/components/AlertList';
 import StatusBadge from '@/components/StatusBadge';
 import RealtimePresencePanel from '@/components/RealtimePresencePanel';
-import PermissionRequestModal from '@/components/PermissionRequestModal';
 import { useAuthStore } from '@/store/useAuthStore';
 import { usePresenceSync } from '@/hooks/usePresenceSync';
 import { alertService } from '@/services/alertService';
 import { reportService } from '@/services/reportService';
 import { settingsService } from '@/services/settingsService';
 import { statusService } from '@/services/statusService';
-import { getCachedPermissionStatus } from '@/lib/permissionManager';
 import {
   ActivityStatus,
   IActivityAlert,
@@ -38,9 +36,6 @@ export default function AdminDashboard() {
   const [dailyReport, setDailyReport] = useState<IDailyActivityReport | null>(null);
   const [settings, setSettings] = useState<ISystemSettings | null>(null);
   const [accessDenied, setAccessDenied] = useState(false);
-  const [showPermissionModal, setShowPermissionModal] = useState(
-    () => !getCachedPermissionStatus()
-  );
 
   usePresenceSync();
 
@@ -143,11 +138,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <PermissionRequestModal
-        isOpen={showPermissionModal}
-        onClose={() => setShowPermissionModal(false)}
-        employeeName={user?.name || 'Admin'}
-      />
       {accessDenied && (
         <div className="rounded-3xl border border-amber-200 bg-amber-50/80 p-4 text-sm text-amber-800">
           Access denied. Sign in as an admin or manager to view live status, alerts, and reports.

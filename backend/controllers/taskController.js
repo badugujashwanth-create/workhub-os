@@ -4,6 +4,39 @@ import {
   isValidObjectId
 } from '../utils/objectId.js';
 import { recordAuditLog } from '../utils/auditLogger.js';
+import Project from '../models/Project.js';
+import User from '../models/User.js';
+import {
+  canManageProject,
+  canManageTask,
+  canViewTask,
+  manageableProjectIds
+} from '../services/workspaceAccessService.js';
+
+const EMPLOYEE_UPDATE_FIELDS = ['status'];
+const MANAGER_UPDATE_FIELDS = [
+  'title',
+  'description',
+  'project',
+  'assignedTo',
+  'status',
+  'priority',
+  'dueDate',
+  'estimatedHours',
+  'tags'
+];
+
+const pickFields = (payload, fields) =>
+  Object.fromEntries(
+    fields.filter((field) => payload?.[field] !== undefined).map((field) => [field, payload[field]])
+  );
+
+const loadTaskProject = async (task) =>
+  task.project ? Project.findById(task.project) : null;
+
+const isProjectParticipant = (project, userId) =>
+  [project.owner, ...project.managers, ...project.members]
+    .some((candidate) => String(candidate) === String(userId));
 
 const populateTask = (docOrQuery) =>
   docOrQuery.populate([
@@ -28,8 +61,23 @@ export const createTask = async (req, res) => {
   if (req.body.project && !isValidObjectId(req.body.project))
     return res.status(400).json({ message: 'Invalid project id' });
 
+  const assignee = await User.findById(req.body.assignedTo);
+  if (!assignee) return res.status(404).json({ message: 'Assignee not found' });
+
+  let project = null;
+  if (req.body.project) {
+    project = await Project.findById(req.body.project);
+    if (!project) return res.status(404).json({ message: 'Project not found' });
+    if (!canManageProject(req.user, project))
+      return res.status(403).json({ message: 'Forbidden' });
+    if (!isProjectParticipant(project, assignee._id))
+      return res.status(400).json({ message: 'Assignee is not part of this project' });
+  } else if (req.user.role !== 'admin') {
+    return res.status(400).json({ message: 'Project required for non-admin task assignment' });
+  }
+
   const task = await Task.create({
-    ...req.body,
+    ...pickFields(req.body, MANAGER_UPDATE_FIELDS),
     assignedBy: req.user._id
   });
   captureHistory(task, 'status', null, task.status, req.user._id, 'created');
@@ -56,7 +104,12 @@ export const getTasksForUser = async (req, res) => {
   if (!isSelf && !['admin', 'manager'].includes(req.user.role))
     return res.status(403).json({ message: 'Forbidden' });
 
-  const query = Task.find({ assignedTo: id }).sort({ createdAt: -1 });
+  const filter = { assignedTo: id };
+  if (!isSelf && req.user.role === 'manager') {
+    const projectIds = await manageableProjectIds(req.user, Project);
+    filter.project = { $in: projectIds };
+  }
+  const query = Task.find(filter).sort({ createdAt: -1 });
   const tasks = await populateTask(query);
   res.json(tasks);
 };
@@ -66,9 +119,7 @@ export const getTaskById = async (req, res) => {
   if (respondIfInvalidObjectId(res, id, 'task id')) return;
   const task = await populateTask(Task.findById(id));
   if (!task) return res.status(404).json({ message: 'Task not found' });
-
-  const isOwner = String(task.assignedTo?._id || task.assignedTo) === String(req.user._id);
-  if (!isOwner && !['admin', 'manager'].includes(req.user.role))
+  if (!canViewTask(req.user, task, task.project))
     return res.status(403).json({ message: 'Forbidden' });
 
   res.json(task);
@@ -81,7 +132,8 @@ export const updateTask = async (req, res) => {
   if (!task) return res.status(404).json({ message: 'Task not found' });
 
   const isOwner = String(task.assignedTo) === String(req.user._id);
-  const privileged = ['admin', 'manager'].includes(req.user.role);
+  const project = await loadTaskProject(task);
+  const privileged = canManageTask(req.user, task, project);
   if (!isOwner && !privileged) return res.status(403).json({ message: 'Forbidden' });
 
   if (req.body?.assignedTo && !isValidObjectId(req.body.assignedTo))
@@ -90,7 +142,23 @@ export const updateTask = async (req, res) => {
     return res.status(400).json({ message: 'Invalid project id' });
 
   const prev = task.toObject();
-  Object.assign(task, req.body);
+  const allowedFields = privileged ? MANAGER_UPDATE_FIELDS : EMPLOYEE_UPDATE_FIELDS;
+  if (privileged && (req.body?.project || req.body?.assignedTo)) {
+    const nextProjectId = req.body.project || task.project;
+    const nextProject = nextProjectId ? await Project.findById(nextProjectId) : null;
+    if (nextProjectId && !nextProject)
+      return res.status(404).json({ message: 'Project not found' });
+    if (nextProject && !canManageProject(req.user, nextProject))
+      return res.status(403).json({ message: 'Forbidden' });
+
+    const nextAssigneeId = req.body.assignedTo || task.assignedTo;
+    const nextAssignee = await User.findById(nextAssigneeId);
+    if (!nextAssignee)
+      return res.status(404).json({ message: 'Assignee not found' });
+    if (nextProject && !isProjectParticipant(nextProject, nextAssignee._id))
+      return res.status(400).json({ message: 'Assignee is not part of this project' });
+  }
+  Object.assign(task, pickFields(req.body, allowedFields));
   captureHistory(task, 'status', prev.status, task.status, req.user._id);
   captureHistory(task, 'priority', prev.priority, task.priority, req.user._id);
   captureHistory(task, 'dueDate', prev.dueDate, task.dueDate, req.user._id);
@@ -121,9 +189,9 @@ export const addTaskComment = async (req, res) => {
   const task = await Task.findById(id);
   if (!task) return res.status(404).json({ message: 'Task not found' });
 
-  const isOwner = String(task.assignedTo) === String(req.user._id);
-  const privileged = ['admin', 'manager'].includes(req.user.role);
-  if (!isOwner && !privileged) return res.status(403).json({ message: 'Forbidden' });
+  const project = await loadTaskProject(task);
+  if (!canViewTask(req.user, task, project))
+    return res.status(403).json({ message: 'Forbidden' });
 
   task.comments.push({ user: req.user._id, message: message.trim() });
   await task.save();
@@ -147,9 +215,9 @@ export const addTaskAttachment = async (req, res) => {
   const task = await Task.findById(id);
   if (!task) return res.status(404).json({ message: 'Task not found' });
 
-  const isOwner = String(task.assignedTo) === String(req.user._id);
-  const privileged = ['admin', 'manager'].includes(req.user.role);
-  if (!isOwner && !privileged) return res.status(403).json({ message: 'Forbidden' });
+  const project = await loadTaskProject(task);
+  if (!canViewTask(req.user, task, project))
+    return res.status(403).json({ message: 'Forbidden' });
 
   const files = req.files?.length ? req.files : req.file ? [req.file] : [];
   if (!files.length) return res.status(400).json({ message: 'No files uploaded' });

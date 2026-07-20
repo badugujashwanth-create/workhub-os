@@ -7,7 +7,7 @@ export const workService = {
     return data;
   },
   stop: async () => {
-    const { data } = await apiClient.post<IWorkSession>('/work/stop');
+    const { data } = await apiClient.post<IWorkSession | null>('/work/stop');
     return data;
   },
   pause: async () => {
