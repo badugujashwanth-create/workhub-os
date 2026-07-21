@@ -322,7 +322,7 @@ Everything is tested, documented, and ready for production."
 
 ---
 
-**Repository**: https://github.com/badugujashwanth-create/Work_OS.git  
+**Repository**: https://github.com/badugujashwanth-create/workhub-os.git
 **Branch**: main  
 **Latest Commit**: 40d70a4  
 **Last Updated**: April 16, 2026  
