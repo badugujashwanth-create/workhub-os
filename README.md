@@ -2,7 +2,9 @@
 
 > **Status: tested workplace-operations prototype.** The verified core is the role/project/task workflow with a deterministic in-memory MongoDB demo. Calls, external AI, production monitoring, and hosted credentials remain environment-dependent.
 
-[![Watch the verified WorkHub OS walkthrough](docs/demo/demo-thumbnail.png)](docs/demo/demo.webm)
+[![Watch the verified WorkHub OS walkthrough](docs/demo/demo-thumbnail.png)](https://jashwanth-portfolio-ten.vercel.app/work/workhub-os/)
+
+[Open MP4](https://jashwanth-portfolio-ten.vercel.app/media/workhub/demo.mp4) ? [Download WebM](https://jashwanth-portfolio-ten.vercel.app/media/workhub/demo.webm) ? [Captions](https://jashwanth-portfolio-ten.vercel.app/media/workhub/demo-captions.vtt)
 
 The 5:42 narrated Chromium walkthrough runs the complete synthetic workflow: administrator assignment, employee consent, task review/comment, explicit session stop, and manager verification. [Captions](docs/demo/demo-captions.vtt), [verification metadata](docs/demo/verification/verification.json), and [frame inspection](docs/demo/verification/INSPECTION.md) are included.
 
